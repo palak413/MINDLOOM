@@ -27,3 +27,10 @@ logs/
 .vscode/
 .idea/
 .DS_Store
+
+# Virtual Environment
+/.venv
+
+# Model and results folders
+/cbt_model/
+/results/

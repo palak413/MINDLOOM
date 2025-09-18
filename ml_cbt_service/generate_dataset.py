@@ -1,52 +1,70 @@
+import google.generativeai as genai
+import csv
 import os
-import openai
-import pandas as pd
 from dotenv import load_dotenv
 
-# Load the OPENAI_API_KEY from your main project's .env file
-# This path assumes ml_cbt_service is in the project root alongside src
-load_dotenv('../.env') 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# Load API key from .env (make sure .env is in your root folder)
+load_dotenv()
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-DISTORTIONS = [
+# List of distortions you want data for
+distortions = [
     "All-or-Nothing Thinking",
     "Overgeneralization",
     "Mental Filter",
-    "Catastrophizing",
-    "Personalization"
+    "Disqualifying the Positive",
+    "Jumping to Conclusions",
+    "Magnification and Minimization",
+    "Emotional Reasoning",
+    "Should Statements",
+    "Labeling and Mislabeling",
+    "Personalization",
 ]
 
-def generate_examples(distortion_name, n_examples=50):
-    """Generates synthetic journal entries for a given distortion."""
-    print(f"Generating {n_examples} examples for '{distortion_name}'...")
-    prompt = f"""
-    You are an expert in Cognitive Behavioral Therapy.
-    Generate {n_examples} distinct examples of a person writing in their journal who is using the '{distortion_name}' cognitive distortion.
-    The examples should be realistic, varied in topic (work, relationships, health), and 1-2 sentences long.
-    Output a python list of strings, where each string is a single example.
-    Example output: ["example 1", "example 2", "example 3"]
-    """
-    
-    try:
-        response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": prompt}]
-        )
-        content = response.choices[0].message.content
-        example_list = eval(content) # Use eval to parse the string representation of a list
-        return [{"text": text, "label": distortion_name} for text in example_list]
-    except Exception as e:
-        print(f"Error parsing response for {distortion_name}: {e}")
-        return []
+# Prompt template
+prompt_template = """
+You are helping create examples of cognitive distortions for a mental health journaling app.
+Focus on the distortion: "{distortion}".
 
-if __name__ == "__main__":
-    all_data = []
-    for distortion in DISTORTIONS:
-        all_data.extend(generate_examples(distortion))
-    
-    if all_data:
-        df = pd.DataFrame(all_data)
-        df.to_csv("distortions.csv", index=False)
-        print(f"\nDataset created successfully at distortions.csv with {len(df)} records.")
-    else:
-        print("\nCould not generate dataset. Please check your API key and try again.")
+Task:
+- Generate 50 short, realistic examples of negative self-talk or journal entries.
+- Each example should sound like a real person writing in their journal.
+- Keep each example between 1–2 sentences.
+- Vary the topics: work, school, relationships, self-worth, health, and daily life.
+- Do NOT number or label them; just return them as plain text, one per line.
+
+Output format:
+One example per line, no extra commentary.
+
+"""
+from dotenv import load_dotenv
+import os
+import google.generativeai as genai
+
+load_dotenv()
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+
+
+# Create model
+model = genai.GenerativeModel("gemini-2.5-flash")
+
+# Write to CSV
+with open("distortions.csv", "w", newline="", encoding="utf-8") as f:
+    writer = csv.writer(f)
+    writer.writerow(["Distortion", "Example"])
+
+    for distortion in distortions:
+        print(f"Generating 50 examples for '{distortion}'...")
+        prompt = prompt_template.format(distortion=distortion)
+        response = model.generate_content(prompt)
+
+        if not response or not response.text:
+            print(f"⚠️ No response for {distortion}")
+            continue
+
+        examples = response.text.strip().split("\n")
+        for ex in examples:
+            if ex.strip():
+                writer.writerow([distortion, ex.strip()])
+
+print("✅ distortions.csv generated successfully!")
