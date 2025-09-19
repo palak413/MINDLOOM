@@ -1,7 +1,7 @@
 // src/routes/journal.routes.js
 import { Router } from 'express';
-import { createJournalEntry, getUserEntries } from '../controllers/journal.controller.js';
-import { authMiddleware } from '../middlewares/auth.middleware.js';
+import { createJournalEntry, getUserEntries } from '../controllers/journalController.js';
+import { authMiddleware } from '../middlewares/authMiddleware.js';
 
 const router = Router();
 

@@ -2,7 +2,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { apiResponse } from "../utils/apiResponse.js";
 import { Mood } from "../models/moodModel.js";
-import { gamificationService } from "../services/gamification.service.js";
+import { gamificationService } from "../services/gamificationservice.js";
 import { apiError } from "../utils/apiError.js";
 
 const logMood = asyncHandler(async (req, res) => {

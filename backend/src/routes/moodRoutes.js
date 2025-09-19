@@ -1,7 +1,7 @@
 // src/routes/mood.routes.js
 import { Router } from 'express';
-import { logMood } from '../controllers/mood.controller.js';
-import { authMiddleware } from '../middlewares/auth.middleware.js';
+import { logMood } from '../controllers/moodController.js';
+import { authMiddleware } from '../middlewares/authMiddleware.js';
 
 const router = Router();
 

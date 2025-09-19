@@ -1,7 +1,7 @@
 // src/routes/breathing.routes.js
 import { Router } from 'express';
-import { logSession } from '../controllers/breathing.controller.js';
-import { authMiddleware } from '../middlewares/auth.middleware.js';
+import { logSession } from '../controllers/breathingController.js';
+import { authMiddleware } from '../middlewares/authMiddleware.js';
 
 const router = Router();
 

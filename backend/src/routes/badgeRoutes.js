@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { getAllBadges } from '../controllers/badge.controller.js';
-import { authMiddleware } from '../middlewares/auth.middleware.js';
+import { getAllBadges } from '../controllers/badgeController.js';
+import { authMiddleware } from '../middlewares/authMiddleware.js';
 
 const router = Router();
 router.use(authMiddleware);

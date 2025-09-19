@@ -1,7 +1,7 @@
 // src/routes/plant.routes.js
 import { Router } from 'express';
-import { getMyPlant, waterMyPlant } from '../controllers/plant.controller.js';
-import { authMiddleware } from '../middlewares/auth.middleware.js';
+import { getMyPlant, waterMyPlant } from '../controllers/plantController.js';
+import { authMiddleware } from '../middlewares/authMiddleware.js';
 
 const router = Router();
 

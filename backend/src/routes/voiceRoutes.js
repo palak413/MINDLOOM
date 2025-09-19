@@ -1,8 +1,8 @@
 // src/routes/voice.routes.js
 import { Router } from 'express';
-import { upload } from '../middlewares/multer.middleware.js';
-import { analyzeVoiceMood } from '../controllers/voice.controller.js';
-import { authMiddleware } from '../middlewares/auth.middleware.js';
+import { upload } from '../middlewares/multerMiddleware.js';
+import { analyzeVoiceMood } from '../controllers/voiceController.js';
+import { authMiddleware } from '../middlewares/authMiddleware.js';
 
 const router = Router();
 

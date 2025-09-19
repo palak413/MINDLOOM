@@ -2,7 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { apiResponse } from "../utils/apiResponse.js";
 import { apiError } from "../utils/apiError.js";
 import { User } from "../models/userModel.js";
-import { authService } from "../services/auth.service.js";
+import { authService } from "../services/authservice.js";
 
 const registerUser = asyncHandler(async (req, res) => {
     const { username, email, password } = req.body;

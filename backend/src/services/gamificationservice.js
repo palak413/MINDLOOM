@@ -2,7 +2,7 @@
 import { User } from '../models/userModel.js';
 import { Badge } from '../models/badgeModel.js';
 import { isSameDay, isYesterday } from 'date-fns';
-import { getIO } from '../socket/index.js';
+import { getIO } from '../sockets/index.js';
 
 /**
  * Updates a user's activity streak.

@@ -1,7 +1,7 @@
 // src/controllers/tasks.controller.js
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { apiResponse } from "../utils/apiResponse.js";
-import { taskService } from "../services/task.service.js";
+import { taskService } from "../services/tasksservice.js";
 
 const getDailyTasks = asyncHandler(async (req, res) => {
     const tasks = await taskService.getDailyTasksForUser(req.user._id);

@@ -1,6 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { apiResponse } from "../utils/apiResponse.js";
-import { chatService } from "../services/chat.service.js";
+import { chatService } from "../services/chatService.js";
 import { apiError } from "../utils/apiError.js";
 
 const handleChatMessage = asyncHandler(async (req, res) => {

@@ -1,7 +1,7 @@
 // src/socket/index.js
 import { Server } from "socket.io";
-import { authenticateSocket } from "./socket.middleware.js";
-import registerBreathingHandlers from "./breathing.handler.js";
+import { authenticateSocket } from "./socketMiddleware.js";
+import registerBreathingHandlers from "./breathingSocket.js";
 
 let io = null;
 

@@ -2,7 +2,12 @@
 
 // --- Imports ---
 // Environment variables
-import dotenv from 'dotenv';
+// This MUST be the first line
+import 'dotenv/config';
+
+
+console.log("Checking for API Key:", process.env.OPENAI_API_KEY);
+
 // Core Node.js module for creating HTTP servers
 import http from 'http';
 // The main Express framework
@@ -16,18 +21,18 @@ import cookieParser from 'cookie-parser';
 // Database connection logic
 import connectDB from './config/db.js';
 // Socket.IO initialization logic
-import { initializeSocketIO } from './socket/index.js';
+import { initializeSocketIO } from './sockets/index.js';
 // Custom logger for application events
 import logger from './utils/logger.js';
 // Cron jobs for scheduled tasks
-import { dailyResetJob } from './jobs/dailyReset.job.js';
-import { dailyHealthCheckJob } from './jobs/healthCheck.job.js';
-import { dailyStreakResetJob } from './jobs/streak.job.js';
+import { dailyResetJob } from './jobs/dailyResetJob.js';
+import { dailyHealthCheckJob } from './jobs/healthCheckJob.js';
+import { dailyStreakResetJob } from './jobs/streaksJob.js';
 
 
 // --- Initial Configuration ---
 // Load environment variables from the .env file at the very beginning
-dotenv.config({ path: './.env' });
+
 
 
 // --- App & Server Initialization ---
@@ -58,18 +63,18 @@ app.use(cookieParser());
 
 
 // --- Route Imports ---
-import authRouter from './routes/auth.routes.js';
-import userRouter from './routes/user.routes.js';
-import adminRouter from './routes/admin.routes.js';
-import plantRouter from './routes/plant.routes.js';
-import tasksRouter from './routes/tasks.routes.js';
-import moodRouter from './routes/mood.routes.js';
-import journalRouter from './routes/journal.routes.js';
-import breathingRouter from './routes/breathing.routes.js';
-import voiceRouter from './routes/voice.routes.js';
-import chatRouter from './routes/chat.routes.js';
-import storeRouter from './routes/store.routes.js';
-import musicRouter from './routes/music.routes.js'; // The new music route
+import authRouter from './routes/authRoutes.js';
+import userRouter from './routes/userRoutes.js';
+import adminRouter from './routes/adminRoutes.js';
+import plantRouter from './routes/plantRoutes.js';
+import tasksRouter from './routes/TaskRoutes.js';
+import moodRouter from './routes/moodRoutes.js';
+import journalRouter from './routes/journalRoutes.js';
+import breathingRouter from './routes/breathingRoutes.js';
+import voiceRouter from './routes/voiceRoutes.js';
+import chatRouter from './routes/chatRoute.js';
+import storeRouter from './routes/storeRoute.js';
+import musicRouter from './routes/musicRoutes.js'; // The new music route
 
 
 // --- Route Declarations ---

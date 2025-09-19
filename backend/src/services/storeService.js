@@ -1,5 +1,5 @@
 import { User } from '../models/userModel.js';
-import { StoreItem } from '../models/storeItemModel.js';
+import  StoreItem  from '../models/storeItemModel.js';
 import { apiError } from '../utils/apiError.js';
 
 /**

@@ -1,6 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { apiResponse } from "../utils/apiResponse.js";
-import { plantService } from "../services/plant.service.js";
+import { plantService } from "../services/plantservice.js";
 
 const getMyPlant = asyncHandler(async (req, res) => {
     const plant = await plantService.getPlantForUser(req.user._id);

@@ -1,7 +1,8 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { apiResponse } from "../utils/apiResponse.js";
-import { StoreItem } from "../models/storeItemModel.js";
-import { storeService } from "../services/store.service.js";
+import  StoreItem  from "../models/storeItemModel.js";
+// AFTER (Correct):
+import * as storeService from "../services/storeService.js";
 
 const getAllItems = asyncHandler(async (req, res) => {
     const items = await StoreItem.find({}).sort({ cost: 1 });

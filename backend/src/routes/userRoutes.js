@@ -4,8 +4,8 @@ import {
   getCurrentUser,
   updateUserDetails,
   changeCurrentPassword
-} from '../controllers/user.controller.js';
-import { authMiddleware } from '../middlewares/auth.middleware.js';
+} from '../controllers/userController.js';
+import { authMiddleware } from '../middlewares/authMiddleware.js';
 
 const router = Router();
 

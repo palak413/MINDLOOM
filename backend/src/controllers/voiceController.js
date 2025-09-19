@@ -1,7 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { apiResponse } from "../utils/apiResponse.js";
 import { apiError } from "../utils/apiError.js";
-import { voiceAnalysisService } from "../services/voiceAnalysis.service.js";
+import { voiceAnalysisService } from "../services/voiceAnalysisService.js";
 
 const analyzeVoiceMood = asyncHandler(async (req, res) => {
     if (!req.file) {

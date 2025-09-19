@@ -5,9 +5,9 @@ import {
     createItem,
     updateItem,
     deleteItem
-} from '../controllers/store.controller.js';
-import { authMiddleware } from '../middlewares/auth.middleware.js';
-import { roleMiddleware } from '../middlewares/role.middleware.js';
+} from '../controllers/storeController.js';
+import { authMiddleware } from '../middlewares/authMiddleware.js';
+import { roleMiddleware } from '../middlewares/roleMiddleware.js';
 
 const router = Router();
 
