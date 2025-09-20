@@ -1,0 +1,22 @@
+{
+  "model_type": "RandomForestClassifier",
+  "num_features": 22,
+  "num_labels": 7,
+  "emotions": [
+    "happy",
+    "sad",
+    "angry",
+    "fear",
+    "surprise",
+    "disgust",
+    "neutral"
+  ],
+  "test_accuracy": 0.14285714285714285,
+  "validation_accuracy": 0.14285714285714285,
+  "training_samples": 672,
+  "validation_samples": 168,
+  "test_samples": 210,
+  "timestamp": "2025-09-21T04:19:09.870406",
+  "feature_extraction": "Simple (22 features)",
+  "algorithm": "RandomForest"
+}

@@ -34,3 +34,8 @@ logs/
 # Model and results folders
 /cbt_model/
 /results/
+
+# ML Model & Results
+/ml_cbt_service/cbt_model/
+/ml_cbt_service/results/
+/ml_cbt_service/logs/

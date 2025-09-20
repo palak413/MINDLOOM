@@ -1,0 +1,26 @@
+{
+  "model_type": "VotingClassifier (RF + SVM + MLP)",
+  "num_features": 50,
+  "num_labels": 7,
+  "emotions": [
+    "happy",
+    "sad",
+    "angry",
+    "fear",
+    "surprise",
+    "disgust",
+    "neutral"
+  ],
+  "test_accuracy": 0.14285714285714285,
+  "validation_accuracy": 0.14285714285714285,
+  "training_samples": 1344,
+  "validation_samples": 336,
+  "test_samples": 420,
+  "timestamp": "2025-09-21T04:17:09.977407",
+  "feature_extraction": "Enhanced (50 features)",
+  "algorithms": [
+    "RandomForest",
+    "SVM",
+    "MLPClassifier"
+  ]
+}
