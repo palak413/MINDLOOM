@@ -1,9 +1,0 @@
-/* 1. Import any third-party styles first */
-@import "flowbite";
-
-/* 2. Add the standard Tailwind CSS directives */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* 3. (Optional) Add your own custom base styles or component classes below */

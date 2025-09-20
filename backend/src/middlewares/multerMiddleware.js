@@ -14,4 +14,35 @@ const storage = multer.diskStorage({
 
 export const upload = multer({ 
   storage,
+  fileFilter: function (req, file, cb) {
+    console.log('Multer file filter - received file:', {
+      fieldname: file.fieldname,
+      originalname: file.originalname,
+      mimetype: file.mimetype,
+      size: file.size
+    });
+    
+    // Accept various audio formats
+    const allowedMimeTypes = [
+      'audio/wav',
+      'audio/webm',
+      'audio/mp4',
+      'audio/mpeg',
+      'audio/ogg',
+      'audio/mp3',
+      'audio/x-wav',
+      'audio/wave'
+    ];
+    
+    if (allowedMimeTypes.includes(file.mimetype)) {
+      console.log('File accepted:', file.originalname);
+      cb(null, true);
+    } else {
+      console.log('Rejected file type:', file.mimetype);
+      cb(new Error('Only audio files are allowed'), false);
+    }
+  },
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  }
 });

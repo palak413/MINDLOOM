@@ -1,0 +1,19 @@
+{
+  "model_type": "MLPClassifier",
+  "num_features": 22,
+  "num_labels": 7,
+  "emotions": [
+    "happy",
+    "sad",
+    "angry",
+    "fear",
+    "surprise",
+    "disgust",
+    "neutral"
+  ],
+  "test_accuracy": 0.42857142857142855,
+  "training_samples": 224,
+  "validation_samples": 56,
+  "test_samples": 70,
+  "timestamp": "2025-09-21T03:38:56.494493"
+}

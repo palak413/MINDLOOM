@@ -19,6 +19,11 @@ const journalSchema = new mongoose.Schema({
   mood: { // Link to the mood logged at the time
     type: String,
   },
+  cbtAnalysis: { // CBT distortion analysis
+    distortion: String,
+    confidence: Number,
+    source: String,
+  },
 }, { timestamps: true });
 
 export const Journal = mongoose.model('Journal', journalSchema);

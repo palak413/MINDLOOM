@@ -82,19 +82,60 @@ test();
 const createJournalEntry = asyncHandler(async (req, res) => {
     const { content } = req.body;
     
-    // Use AI to analyze the mood of the entry before saving
-    const detectedMood = await aiService.analyzeJournalMood(content);
-
-    const entry = await Journal.create({
-        user: req.user._id,
-        content,
-        mood: detectedMood,
-    });
-
-    await gamificationService.addPointsAndCheckBadges({ userId: req.user._id, points: 10 });
-    await gamificationService.updateUserStreak(req.user._id);
+    if (!content || content.trim().length === 0) {
+        return res.status(400).json(new apiResponse(400, null, "Content is required"));
+    }
     
-    return res.status(201).json(new apiResponse(201, entry, "Journal entry created successfully"));
+    try {
+        // Use comprehensive AI analysis (mood + CBT distortions)
+        let analysisResult = {
+            mood: 'neutral',
+            cbtAnalysis: null
+        };
+        
+        try {
+            analysisResult = await aiService.analyzeJournalComprehensive(content);
+            console.log('Comprehensive analysis result:', analysisResult);
+        } catch (aiError) {
+            console.error('AI analysis failed (non-critical):', aiError);
+            // Continue with default analysis
+        }
+
+        // Generate a title from the first few words of the content
+        const words = content.trim().split(/\s+/).filter(word => word.length > 0);
+        const title = words.length > 0 
+            ? (words.slice(0, 5).join(' ') + (words.length > 5 ? '...' : ''))
+            : 'Untitled Entry';
+
+        console.log('Creating journal entry with title:', title, 'content length:', content.length);
+        console.log('Title validation - length:', title.length, 'is empty:', title.trim().length === 0);
+
+        // Ensure title is never empty
+        const finalTitle = title.trim().length > 0 ? title.trim() : 'Untitled Entry';
+        console.log('Final title:', finalTitle);
+
+        const entry = await Journal.create({
+            user: req.user._id,
+            title: finalTitle,
+            content,
+            mood: analysisResult.mood,
+            cbtAnalysis: analysisResult.cbtAnalysis,
+        });
+
+        // Try to update gamification, but don't fail the whole request if it fails
+        try {
+            await gamificationService.addPointsAndCheckBadges({ userId: req.user._id, points: 10 });
+            await gamificationService.updateUserStreak(req.user._id);
+        } catch (gamificationError) {
+            console.error('Gamification error (non-critical):', gamificationError);
+            // Continue with the response even if gamification fails
+        }
+        
+        return res.status(201).json(new apiResponse(201, entry, "Journal entry created successfully"));
+    } catch (error) {
+        console.error('Journal creation error:', error);
+        return res.status(500).json(new apiResponse(500, null, "Failed to create journal entry"));
+    }
 });
 
 const getUserEntries = asyncHandler(async (req, res) => {
