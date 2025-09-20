@@ -6,7 +6,7 @@ import ProtectedRoute from './ProtectedRoutes';
 import AdminRoute from './AdminRoute';
 
 // Import Page Components
-import AuthPage from '../pages/AuthPage';
+import LoginPage from '../pages/LoginPage';
 import DashboardPage from '../pages/DashboardPage';
 import JournalPage from '../pages/JournalPage';
 import StorePage from '../pages/StorePage';
@@ -21,8 +21,8 @@ export const AppRoutes = () => {
         <Routes>
             {/* --- Public Routes --- */}
             {/* These routes are accessible to everyone */}
-            <Route path="/login" element={<AuthPage />} /> 
-            <Route path="/register" element={<AuthPage />} />
+            <Route path="/login" element={<LoginPage />} /> 
+            <Route path="/register" element={<LoginPage />} />
 
             {/* --- Protected User Routes --- */}
             {/* These routes are only accessible to logged-in users */}

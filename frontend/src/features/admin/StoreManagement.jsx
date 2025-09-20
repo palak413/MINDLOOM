@@ -1,8 +1,8 @@
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import apiClient from '../lib/axios';
+import apiClient from '../../lib/axios';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '../../hookform/resolvers/zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table";
 import { Button } from '../../components/ui/button';

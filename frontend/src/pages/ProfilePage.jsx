@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAuth } from '../context/AuthProvider';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Badges from '../features/profile/Badges';
 import Inventory from '../features/profile/Inventory';
 

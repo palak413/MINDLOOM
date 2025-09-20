@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs.jsx";
 import UserManagement from '../features/admin/UserManagement';
 import StoreManagement from '../features/admin/StoreManagement';
 

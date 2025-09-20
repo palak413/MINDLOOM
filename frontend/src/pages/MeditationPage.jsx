@@ -1,6 +1,6 @@
 import React from 'react';
 import TrackList from '../features/meditation/TrackList';
-import { Card } from '../../components/ui/card';
+import { Card } from '@/components/ui/card';
 
 function MeditationPage() {
     return (

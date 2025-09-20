@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthProvider';
-import Layout from './components/layout/Layout';
+import Layout from '../components/layout/Layout';
 
 const AdminRoute = () => {
     const { user, isAuthenticated, loading } = useAuth();

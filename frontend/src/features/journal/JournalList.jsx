@@ -1,5 +1,7 @@
 import React from 'react';
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { format } from 'date-fns';
 
 function JournalList({ entries, setSelectedEntry, selectedEntry, setNewEntryMode }) {
