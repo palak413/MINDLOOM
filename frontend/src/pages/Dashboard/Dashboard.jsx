@@ -230,32 +230,32 @@ const Dashboard = () => {
       title: 'Write Journal',
       description: 'Express your thoughts',
       icon: Plus,
-      gradient: 'from-blue-500 to-cyan-500',
-      glowColor: 'shadow-blue-500/25',
+      color: 'bg-teal-500',
+      glowColor: 'shadow-teal-500/25',
       link: '/journal'
     },
     {
       title: 'Add Task',
       description: 'Set a new goal',
       icon: Target,
-      gradient: 'from-emerald-500 to-green-500',
-      glowColor: 'shadow-emerald-500/25',
+      color: 'bg-teal-500',
+      glowColor: 'shadow-teal-500/25',
       link: '/tasks'
     },
     {
       title: 'Track Mood',
       description: 'How are you feeling?',
       icon: Heart,
-      gradient: 'from-pink-500 to-rose-500',
-      glowColor: 'shadow-pink-500/25',
+      color: 'bg-teal-500',
+      glowColor: 'shadow-teal-500/25',
       link: '/mood'
     },
     {
       title: 'Breathing Exercise',
       description: 'Take a moment to breathe',
       icon: Wind,
-      gradient: 'from-purple-500 to-violet-500',
-      glowColor: 'shadow-purple-500/25',
+      color: 'bg-teal-500',
+      glowColor: 'shadow-teal-500/25',
       link: '/breathing'
     }
   ];
@@ -265,28 +265,28 @@ const Dashboard = () => {
       title: 'Daily Streak',
       value: stats.streak,
       icon: Flame,
-      color: 'from-orange-400 to-red-500',
+      color: 'bg-teal-500',
       description: 'Days in a row'
     },
     {
       title: 'Total Points',
       value: user?.points || 0,
       icon: Star,
-      color: 'from-yellow-400 to-orange-500',
+      color: 'bg-teal-500',
       description: 'Wellness points earned'
     },
     {
       title: 'Plant Growth',
       value: stats.plantLevel,
       icon: Leaf,
-      color: 'from-green-400 to-emerald-500',
+      color: 'bg-teal-500',
       description: 'Current level'
     },
     {
       title: 'Badges Earned',
       value: stats.badges,
       icon: Crown,
-      color: 'from-purple-400 to-pink-500',
+      color: 'bg-teal-500',
       description: 'Achievements unlocked'
     }
   ];
@@ -307,11 +307,11 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-secondary-50 to-accent-50 relative overflow-hidden">
+    <div className="min-h-screen bg-teal-50 relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-primary-300/30 to-secondary-300/30 rounded-full blur-3xl"
+          className="absolute -top-40 -right-40 w-96 h-96 bg-teal-300/30 rounded-full blur-3xl"
           animate={{
             x: [0, 100, 0],
             y: [0, -50, 0],
@@ -324,7 +324,7 @@ const Dashboard = () => {
           }}
         />
         <motion.div
-          className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-accent-300/30 to-primary-300/30 rounded-full blur-3xl"
+          className="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-300/30 rounded-full blur-3xl"
           animate={{
             x: [0, -80, 0],
             y: [0, 60, 0],
@@ -338,7 +338,7 @@ const Dashboard = () => {
           }}
         />
         <motion.div
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-secondary-300/20 to-accent-300/20 rounded-full blur-2xl"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-teal-300/20 rounded-full blur-2xl"
           animate={{
             scale: [1, 1.2, 1],
             opacity: [0.3, 0.6, 0.3],
@@ -353,7 +353,7 @@ const Dashboard = () => {
         {[...Array(6)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-2 h-2 bg-gradient-to-r from-primary-400 to-secondary-400 rounded-full opacity-60"
+            className="absolute w-2 h-2 bg-teal-400 rounded-full opacity-60"
             style={{
               left: `${20 + i * 15}%`,
               top: `${30 + i * 10}%`,
@@ -380,7 +380,7 @@ const Dashboard = () => {
       >
         {/* Hero Welcome Section */}
         <motion.div 
-          className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary-600 via-secondary-600 to-accent-600 p-8 text-white shadow-2xl backdrop-blur-sm"
+          className="relative overflow-hidden rounded-3xl bg-[#96e3d1] p-8 text-black shadow-2xl backdrop-blur-sm"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.1 }}
@@ -431,13 +431,13 @@ const Dashboard = () => {
               transition={{ delay: 0.3 }}
             >
               <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                <Sparkles className="w-6 h-6 text-white" />
+                <Sparkles className="w-6 h-6 text-black" />
               </div>
               <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-                  Welcome back, {user?.username}! ✨
-                </h1>
-                <p className="text-white/90 text-lg font-medium">Ready to continue your wellness journey?</p>
+                <p className="text-4xl font-bold text-gray-600">
+                  Welcome back, {user?.username}! 
+                </p>
+                <p className="text-black/90 text-lg font-medium">Ready to continue your wellness journey?</p>
               </div>
             </motion.div>
 
@@ -470,7 +470,7 @@ const Dashboard = () => {
                 className="mt-8 p-6 bg-white/10 backdrop-blur-sm rounded-3xl border border-white/20"
               >
                 <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-500 rounded-2xl flex items-center justify-center">
+                  <div className="w-10 h-10 bg-teal-500 rounded-2xl flex items-center justify-center">
                     <Brain className="w-5 h-5 text-white" />
                   </div>
                   <div>
@@ -494,7 +494,7 @@ const Dashboard = () => {
                       className="p-4 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 hover:bg-white/10 transition-all duration-200"
                     >
                       <div className="flex items-start space-x-3">
-                        <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <div className="w-8 h-8 bg-teal-500 rounded-xl flex items-center justify-center flex-shrink-0">
                           <Sparkles className="w-4 h-4 text-white" />
                         </div>
                         <div className="flex-1">
@@ -504,7 +504,7 @@ const Dashboard = () => {
                           <p className="text-white/80 text-sm mb-3">
                             {intervention.content}
                           </p>
-                          <button className="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg text-sm font-medium hover:from-blue-600 hover:to-cyan-600 transition-all duration-200 hover:scale-105">
+                          <button className="px-4 py-2 bg-teal-500 text-white rounded-lg text-sm font-medium hover:bg-teal-600 transition-all duration-200 hover:scale-105">
                             Try This
                           </button>
                         </div>
@@ -535,10 +535,10 @@ const Dashboard = () => {
                 transition={{ delay: 0.3 + index * 0.1 }}
                 whileHover={{ y: -8, scale: 1.03, rotateY: 2 }}
               >
-                <div className={`absolute inset-0 bg-gradient-to-br ${card.color} opacity-10 group-hover:opacity-20 transition-opacity duration-300`} />
+                <div className={`absolute inset-0 ${card.color.replace('bg-', 'bg-')}/10 group-hover:opacity-20 transition-opacity duration-300`} />
                 <div className="relative p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className={`w-16 h-16 bg-gradient-to-br ${card.color} rounded-3xl flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
+                    <div className={`w-16 h-16 ${card.color} rounded-3xl flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
                       <Icon className="w-7 h-7 text-white" />
                     </div>
                     <motion.div
@@ -565,7 +565,7 @@ const Dashboard = () => {
           transition={{ duration: 0.6, delay: 0.4 }}
         >
           <div className="flex items-center space-x-3 mb-6">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-teal-500 rounded-2xl flex items-center justify-center">
               <Zap className="w-5 h-5 text-white" />
             </div>
             <h2 className="text-2xl font-bold text-gray-800">Quick Actions</h2>
@@ -587,7 +587,7 @@ const Dashboard = () => {
                     to={action.link}
                     className="group block p-6 bg-white/70 backdrop-blur-sm rounded-3xl border border-white/40 hover:border-white/60 transition-all duration-500 hover:shadow-2xl hover:bg-white/80"
                   >
-                    <div className={`w-16 h-16 bg-gradient-to-br ${action.gradient} rounded-3xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-xl ${action.glowColor}`}>
+                    <div className={`w-16 h-16 ${action.color} rounded-3xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-xl ${action.glowColor}`}>
                       <Icon className="w-8 h-8 text-white" />
                     </div>
                     <h3 className="font-semibold text-gray-800 mb-2 group-hover:text-gray-900 transition-colors">{action.title}</h3>
@@ -610,7 +610,7 @@ const Dashboard = () => {
           <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-xl">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-500 rounded-2xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-teal-500 rounded-2xl flex items-center justify-center">
                   <Target className="w-5 h-5 text-white" />
                 </div>
                 <h2 className="text-xl font-bold text-gray-800">Recent Tasks</h2>
@@ -858,7 +858,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Mood Calendar */}
             <motion.div 
               className="lg:col-span-1"
@@ -881,7 +881,7 @@ const Dashboard = () => {
 
             {/* Meditation Timer */}
             <motion.div 
-              className="lg:col-span-2 xl:col-span-1"
+              className="lg:col-span-1"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 1.1 }}
