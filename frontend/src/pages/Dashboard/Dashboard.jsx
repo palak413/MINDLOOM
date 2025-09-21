@@ -40,7 +40,7 @@ import MeditationTimer from '../../components/Features/MeditationTimer';
 import AIAssistant from '../../components/AIAssistant/AIAssistant';
 
 const Dashboard = () => {
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const [stats, setStats] = useState({
     tasksCompleted: 0,
     journalEntries: 0,
@@ -82,14 +82,21 @@ const Dashboard = () => {
   }, []);
 
   const fetchDashboardData = async () => {
+    // Check if user is authenticated before making API calls
+    if (!user || !isAuthenticated) {
+      console.log('User not authenticated, skipping API calls');
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const [tasksRes, journalRes, moodRes, plantRes, breathingRes, badgesRes] = await Promise.all([
-        taskAPI.getTasks(),
-        journalAPI.getEntries(),
-        moodAPI.getMoodHistory(),
-        plantAPI.getPlant(),
-        breathingAPI.getSessions(),
-        badgeAPI.getBadges()
+        taskAPI.getTasks().catch(() => ({ data: { data: [] } })),
+        journalAPI.getEntries().catch(() => ({ data: { data: [] } })),
+        moodAPI.getMoodHistory().catch(() => ({ data: { data: [] } })),
+        plantAPI.getPlant().catch(() => ({ data: { data: { growthLevel: 1 } } })),
+        breathingAPI.getSessions().catch(() => ({ data: { data: [] } })),
+        badgeAPI.getBadges().catch(() => ({ data: { data: [] } }))
       ]);
 
       const tasks = tasksRes.data.data || [];

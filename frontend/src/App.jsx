@@ -25,12 +25,13 @@ import Meditation from './pages/Meditation/Meditation';
 import EmergencyServices from './pages/Emergency/EmergencyServices';
 
 function App() {
-  const { checkAuth, isLoading } = useAuthStore();
+  const { checkAuth, isLoading, isAuthenticated } = useAuthStore();
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
+  // Show loading only if we're actually checking auth
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -43,7 +44,12 @@ function App() {
   }
 
   return (
-    <Router>
+    <Router
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true
+      }}
+    >
       <div className="App">
         <Toaster 
           position="top-right"

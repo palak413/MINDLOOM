@@ -27,4 +27,16 @@ const logSession = asyncHandler(async (req, res) => {
   );
 });
 
-export { logSession };
+const getSessions = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  
+  const sessions = await BreathingSession.find({ user: userId })
+    .sort({ createdAt: -1 })
+    .limit(20); // Get last 20 sessions
+
+  return res.status(200).json(
+    new apiResponse(200, sessions, "Breathing sessions retrieved successfully")
+  );
+});
+
+export { logSession, getSessions };

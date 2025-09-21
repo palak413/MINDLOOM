@@ -23,4 +23,12 @@ const logMood = asyncHandler(async (req, res) => {
     return res.status(201).json(new apiResponse(201, moodEntry, "Mood logged successfully"));
 });
 
-export { logMood };
+const getMoodHistory = asyncHandler(async (req, res) => {
+    const moods = await Mood.find({ user: req.user._id })
+        .sort({ createdAt: -1 })
+        .limit(30); // Get last 30 mood entries
+
+    return res.status(200).json(new apiResponse(200, moods, "Mood history retrieved successfully"));
+});
+
+export { logMood, getMoodHistory };

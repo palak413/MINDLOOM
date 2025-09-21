@@ -16,6 +16,13 @@ const useAuthStore = create(
         try {
           const response = await authAPI.login(credentials);
           const user = response.data.data.user;
+          const accessToken = response.data.data.accessToken;
+          
+          // Store token in localStorage
+          if (accessToken) {
+            localStorage.setItem('accessToken', accessToken);
+          }
+          
           set({ user, isAuthenticated: true, isLoading: false });
           return { success: true, user };
         } catch (error) {
@@ -29,6 +36,13 @@ const useAuthStore = create(
         try {
           const response = await authAPI.register(userData);
           const user = response.data.data.user;
+          const accessToken = response.data.data.accessToken;
+          
+          // Store token in localStorage
+          if (accessToken) {
+            localStorage.setItem('accessToken', accessToken);
+          }
+          
           set({ user, isAuthenticated: true, isLoading: false });
           return { success: true, user };
         } catch (error) {
@@ -43,11 +57,21 @@ const useAuthStore = create(
         } catch (error) {
           console.error('Logout error:', error);
         } finally {
+          // Clear token from localStorage
+          localStorage.removeItem('accessToken');
           set({ user: null, isAuthenticated: false });
         }
       },
 
       checkAuth: async () => {
+        const token = localStorage.getItem('accessToken');
+        
+        // If no token, skip the API call
+        if (!token) {
+          set({ user: null, isAuthenticated: false, isLoading: false });
+          return false;
+        }
+        
         set({ isLoading: true });
         try {
           const response = await userAPI.getProfile();
@@ -55,6 +79,8 @@ const useAuthStore = create(
           set({ user, isAuthenticated: true, isLoading: false });
           return true;
         } catch (error) {
+          // If API call fails, clear the token and user data
+          localStorage.removeItem('accessToken');
           set({ user: null, isAuthenticated: false, isLoading: false });
           return false;
         }

@@ -1,41 +1,216 @@
 # Dependencies
-/node_modules
-/backend/node_modules
-/frontend/node_modules
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+ml_cbt_service/node_modules/
 
 # Environment Variables
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 *.env
-.env.*
+
+# Build outputs
+dist/
+build/
+frontend/dist/
+frontend/build/
+backend/dist/
+backend/build/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Dependency directories
+jspm_packages/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+
+# Nuxt.js build / generate output
+.nuxt
+
+# Gatsby files
+.cache/
+public
+
+# Storybook build outputs
+.out
+.storybook-out
+
+# Temporary folders
+tmp/
+temp/
 
 # Python
 __pycache__/
-*.pyc
-.venv
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
 venv/
 env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+ml_cbt_service/venv/
 
-# Build files
-/dist
-/build
-
-# Log files
-*.log
-logs/
-
-# IDE & OS specific
+# IDE & Editor files
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
-# Virtual Environment
-/.venv
+# ML Model files (Large files - should not be in git)
+*.pkl
+*.safetensors
+*.pt
+*.bin
+*.h5
+*.model
+*.weights
 
-# Model and results folders
-/cbt_model/
-/results/
+# ML Model directories
+cbt_model/
+results/
+ml_cbt_service/cbt_model/
+ml_cbt_service/results/
+ml_cbt_service/logs/
+backend/ai_voice_model/
+backend/ai_voice_model/*.pkl
+backend/ai_voice_model/*.safetensors
+backend/ai_voice_model/*.png
+backend/ai_voice_model/*.jpg
+backend/ai_voice_model/*.jpeg
 
-# ML Model & Results
-/ml_cbt_service/cbt_model/
-/ml_cbt_service/results/
-/ml_cbt_service/logs/
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads and user content
+uploads/
+public/uploads/
+backend/uploads/
+
+# Test files
+test-results/
+coverage/
+
+# Vercel
+.vercel
+
+# Railway
+.railway
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Large media files
+*.mp4
+*.avi
+*.mov
+*.wmv
+*.flv
+*.webm
+*.mkv
+*.mp3
+*.wav
+*.flac
+*.aac
+*.ogg
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Certificate files
+*.pem
+*.key
+*.crt
+*.cert
+
+# Package manager lock files (optional - uncomment if you want to ignore them)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
