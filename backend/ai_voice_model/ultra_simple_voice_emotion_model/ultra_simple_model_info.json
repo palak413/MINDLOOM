@@ -11,12 +11,12 @@
     "disgust",
     "neutral"
   ],
-  "test_accuracy": 0.8,
-  "validation_accuracy": 0.7589285714285714,
+  "test_accuracy": 0.7714285714285715,
+  "validation_accuracy": 0.7142857142857143,
   "training_samples": 448,
   "validation_samples": 112,
   "test_samples": 140,
-  "timestamp": "2025-09-21T04:20:23.188089",
+  "timestamp": "2025-09-21T04:32:37.646213",
   "feature_extraction": "Ultra-Simple (18 features)",
   "algorithm": "RandomForest"
 }

@@ -359,25 +359,34 @@ def main():
     
     # Train ultra-simple model
     print("\n4️⃣ Training ultra-simple model...")
-    val_score = model.train_ultra_simple_model(X_train, y_train, X_val, y_val)
+    
+    # Fit label encoder
+    model.label_encoder.fit(y_train)
+    y_train_encoded = model.label_encoder.transform(y_train)
+    y_val_encoded = model.label_encoder.transform(y_val)
+    y_test_encoded = model.label_encoder.transform(y_test)
+    
+    val_score = model.train_ultra_simple_model(X_train, y_train_encoded, X_val, y_val_encoded)
     
     # Evaluate model
     print("\n5️⃣ Evaluating model...")
     X_test_scaled = model.scaler.transform(X_test)
-    test_score = model.model.score(X_test_scaled, y_test)
+    test_score = model.model.score(X_test_scaled, y_test_encoded)
     print(f"   📊 Test Accuracy: {test_score:.4f}")
     
     # Get predictions for detailed evaluation
     y_pred = model.model.predict(X_test_scaled)
+    y_test_labels = model.label_encoder.inverse_transform(y_test_encoded)
+    y_pred_labels = model.label_encoder.inverse_transform(y_pred)
     
     # Classification report
     emotion_labels = ['happy', 'sad', 'angry', 'fear', 'surprise', 'disgust', 'neutral']
-    report = classification_report(y_test, y_pred, target_names=emotion_labels)
+    report = classification_report(y_test_labels, y_pred_labels, target_names=emotion_labels)
     print("\n📋 Classification Report:")
     print(report)
     
     # Confusion matrix
-    cm = confusion_matrix(y_test, y_pred)
+    cm = confusion_matrix(y_test_labels, y_pred_labels)
     plt.figure(figsize=(10, 8))
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
                 xticklabels=emotion_labels, yticklabels=emotion_labels)

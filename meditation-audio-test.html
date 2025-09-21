@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meditation Audio Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .audio-test {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            backdrop-filter: blur(10px);
+        }
+        audio {
+            width: 100%;
+            margin: 10px 0;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success { background: rgba(34, 197, 94, 0.3); }
+        .error { background: rgba(239, 68, 68, 0.3); }
+        .info { background: rgba(59, 130, 246, 0.3); }
+    </style>
+</head>
+<body>
+    <h1>🎵 Meditation Audio Test</h1>
+    <p>Testing the audio URLs used in the meditation app...</p>
+
+    <div class="audio-test">
+        <h3>Ocean Waves</h3>
+        <audio controls>
+            <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBS13yO/eizEIHWq+8+OWT" type="audio/wav">
+            Your browser does not support the audio element.
+        </audio>
+        <div class="status info">Using data URL to avoid CORS issues</div>
+    </div>
+
+    <div class="audio-test">
+        <h3>Forest Rain</h3>
+        <audio controls>
+            <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBS13yO/eizEIHWq+8+OWT" type="audio/wav">
+            Your browser does not support the audio element.
+        </audio>
+        <div class="status info">Using data URL to avoid CORS issues</div>
+    </div>
+
+    <div class="audio-test">
+        <h3>Test with External URL (May Fail Due to CORS)</h3>
+        <audio controls>
+            <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.wav" type="audio/wav">
+            Your browser does not support the audio element.
+        </audio>
+        <div class="status error">This will likely fail due to CORS policy</div>
+    </div>
+
+    <div class="audio-test">
+        <h3>Working External URL</h3>
+        <audio controls>
+            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="audio/mp4">
+            Your browser does not support the audio element.
+        </audio>
+        <div class="status success">This should work - Google's test video</div>
+    </div>
+
+    <script>
+        // Test audio loading
+        document.querySelectorAll('audio').forEach((audio, index) => {
+            audio.addEventListener('loadstart', () => {
+                console.log(`Audio ${index + 1}: Loading started`);
+            });
+            
+            audio.addEventListener('canplay', () => {
+                console.log(`Audio ${index + 1}: Can play`);
+                audio.parentElement.querySelector('.status').textContent = '✅ Audio loaded successfully!';
+                audio.parentElement.querySelector('.status').className = 'status success';
+            });
+            
+            audio.addEventListener('error', (e) => {
+                console.log(`Audio ${index + 1}: Error`, e);
+                audio.parentElement.querySelector('.status').textContent = '❌ Audio failed to load';
+                audio.parentElement.querySelector('.status').className = 'status error';
+            });
+        });
+    </script>
+</body>
+</html>

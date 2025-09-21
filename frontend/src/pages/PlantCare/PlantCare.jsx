@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Leaf, 
   Droplets, 
@@ -11,19 +11,98 @@ import {
   Heart,
   Calendar,
   Sparkles,
-  Zap as Lightning
+  Zap as Lightning,
+  Flower2,
+  TreePine,
+  Sprout,
+  Bug,
+  Shield,
+  Star,
+  Gift,
+  Target,
+  Award,
+  Play,
+  Pause,
+  RotateCcw,
+  Music,
+  Camera,
+  Share2,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { plantAPI } from '../../services/api';
 import toast from 'react-hot-toast';
+import { PlantTargetGame, MusicGardenGame, PlantPuzzleGame } from '../../components/PlantGames/PlantGames';
 
 const PlantCare = () => {
   const [plant, setPlant] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isWatering, setIsWatering] = useState(false);
+  const [isPlayingMusic, setIsPlayingMusic] = useState(false);
+  const [currentMusicTrack, setCurrentMusicTrack] = useState(0);
+  const [musicTracks, setMusicTracks] = useState([
+    {
+      id: 1,
+      title: "Forest Rain",
+      artist: "Nature Sounds",
+      url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", // CORS-free URL
+      duration: "10:00",
+      emoji: "🌧️"
+    },
+    {
+      id: 2,
+      title: "Ocean Waves",
+      artist: "Calm Nature",
+      url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4", // CORS-free URL
+      duration: "15:00",
+      emoji: "🌊"
+    },
+    {
+      id: 3,
+      title: "Bird Songs",
+      artist: "Morning Chorus",
+      url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", // CORS-free URL
+      duration: "12:00",
+      emoji: "🐦"
+    },
+    {
+      id: 4,
+      title: "Zen Garden",
+      artist: "Peaceful Sounds",
+      url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4", // CORS-free URL
+      duration: "20:00",
+      emoji: "🧘"
+    },
+    {
+      id: 5,
+      title: "Gentle Wind",
+      artist: "Nature Ambience",
+      url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4", // CORS-free URL
+      duration: "18:00",
+      emoji: "🍃"
+    }
+  ]);
+  const [showPlantCollection, setShowPlantCollection] = useState(false);
+  const [activeTab, setActiveTab] = useState('care');
   const [lastWatered, setLastWatered] = useState(null);
+  const [plantMood, setPlantMood] = useState('happy');
+  const [achievements, setAchievements] = useState([]);
+  const [activeGame, setActiveGame] = useState(null);
+  const [gameScore, setGameScore] = useState(0);
+
+  // Plant collection data
+  const [plantCollection] = useState([
+    { id: 1, name: 'Sunflower', type: 'flower', unlocked: true, rarity: 'common', emoji: '🌻' },
+    { id: 2, name: 'Rose', type: 'flower', unlocked: true, rarity: 'common', emoji: '🌹' },
+    { id: 3, name: 'Cactus', type: 'succulent', unlocked: false, rarity: 'rare', emoji: '🌵' },
+    { id: 4, name: 'Bamboo', type: 'tree', unlocked: false, rarity: 'epic', emoji: '🎋' },
+    { id: 5, name: 'Lotus', type: 'flower', unlocked: false, rarity: 'legendary', emoji: '🪷' },
+    { id: 6, name: 'Cherry Blossom', type: 'tree', unlocked: false, rarity: 'legendary', emoji: '🌸' }
+  ]);
 
   useEffect(() => {
     fetchPlant();
+    generateAchievements();
   }, []);
 
   const fetchPlant = async () => {
@@ -32,6 +111,7 @@ const PlantCare = () => {
       const response = await plantAPI.getPlant();
       setPlant(response.data.data);
       setLastWatered(response.data.data?.lastWatered);
+      updatePlantMood(response.data.data);
     } catch (error) {
       console.error('Error fetching plant:', error);
       // Create a default plant if none exists
@@ -40,567 +120,666 @@ const PlantCare = () => {
         growthLevel: 1,
         healthStatus: 'healthy',
         lastWatered: new Date(),
-        weather: 'sunny'
+        weather: 'sunny',
+        name: 'My First Plant',
+        species: 'Sunflower'
       });
     } finally {
       setIsLoading(false);
     }
   };
 
+  const updatePlantMood = (plantData) => {
+    if (!plantData) return;
+    
+    const hoursSinceWatered = plantData.lastWatered ? 
+      (Date.now() - new Date(plantData.lastWatered).getTime()) / (1000 * 60 * 60) : 24;
+    
+    if (hoursSinceWatered < 6) {
+      setPlantMood('happy');
+    } else if (hoursSinceWatered < 12) {
+      setPlantMood('thirsty');
+    } else if (hoursSinceWatered < 24) {
+      setPlantMood('sad');
+    } else {
+      setPlantMood('dying');
+    }
+  };
+
+  const generateAchievements = () => {
+    setAchievements([
+      { id: 1, title: 'First Sprout', description: 'Grow your first plant', unlocked: true, icon: Sprout },
+      { id: 2, title: 'Green Thumb', description: 'Water 10 times', unlocked: false, icon: Droplets },
+      { id: 3, title: 'Plant Parent', description: 'Reach level 5', unlocked: false, icon: Heart },
+      { id: 4, title: 'Collection Master', description: 'Unlock 5 plants', unlocked: false, icon: Star },
+      { id: 5, title: 'Music Lover', description: 'Play music for plant', unlocked: false, icon: Music }
+    ]);
+  };
+
   const handleWaterPlant = async () => {
+    if (isWatering) return;
+    
     setIsWatering(true);
-    try {
-      const response = await plantAPI.waterPlant();
-      setPlant(prev => ({
-        ...prev,
-        growthPoints: prev.growthPoints + 10,
-        lastWatered: new Date(),
-        healthStatus: 'healthy'
-      }));
-      setLastWatered(new Date());
-      toast.success('Plant watered! +10 growth points');
-    } catch (error) {
-      toast.error('Failed to water plant');
-    } finally {
-      setIsWatering(false);
+    
+    // Animate watering
+    setTimeout(async () => {
+      try {
+        const response = await plantAPI.waterPlant();
+        setPlant(response.data.data);
+        setLastWatered(new Date());
+        updatePlantMood(response.data.data);
+        toast.success('Plant watered! 🌱');
+      } catch (error) {
+        console.error('Error watering plant:', error);
+        toast.error('Failed to water plant');
+      } finally {
+        setIsWatering(false);
+      }
+    }, 2000);
+  };
+
+  const handlePlayMusic = () => {
+    if (isPlayingMusic) {
+      setIsPlayingMusic(false);
+      toast.success('Music stopped 🎵');
+    } else {
+      setIsPlayingMusic(true);
+      toast.success(`Playing ${musicTracks[currentMusicTrack].title} for your plant 🎶`);
+      
+      // Here you can add actual audio playback logic
+      // For now, we'll just show the visual feedback
+      console.log('Playing music:', musicTracks[currentMusicTrack]);
     }
   };
 
-  const getWeatherIcon = (weather) => {
-    switch (weather) {
-      case 'sunny': return <Sun className="w-6 h-6 text-yellow-500" />;
-      case 'cloudy': return <Cloud className="w-6 h-6 text-gray-500" />;
-      case 'rainy': return <CloudRain className="w-6 h-6 text-blue-500" />;
-      case 'stormy': return <Zap className="w-6 h-6 text-purple-500" />;
-      default: return <Sun className="w-6 h-6 text-yellow-500" />;
-    }
+  const handleNextTrack = () => {
+    const nextTrack = (currentMusicTrack + 1) % musicTracks.length;
+    setCurrentMusicTrack(nextTrack);
+    toast.success(`Switched to ${musicTracks[nextTrack].title} 🎵`);
   };
 
-  const getHealthColor = (health) => {
-    switch (health) {
-      case 'healthy': return 'text-green-600';
-      case 'pale': return 'text-yellow-600';
-      case 'wilting': return 'text-red-600';
-      default: return 'text-green-600';
-    }
+  const handlePrevTrack = () => {
+    const prevTrack = currentMusicTrack === 0 ? musicTracks.length - 1 : currentMusicTrack - 1;
+    setCurrentMusicTrack(prevTrack);
+    toast.success(`Switched to ${musicTracks[prevTrack].title} 🎵`);
   };
 
-  const getPlantSize = (level) => {
-    return Math.min(level * 30 + 60, 180); // Max size 180px
+  const handleGameStart = (gameType) => {
+    setActiveGame(gameType);
   };
 
-  const getPlantColor = (level) => {
-    if (level >= 5) return 'from-emerald-400 to-green-600';
-    if (level >= 3) return 'from-green-400 to-emerald-500';
-    return 'from-lime-400 to-green-500';
+  const handleGameClose = () => {
+    setActiveGame(null);
   };
 
-  const getPotColor = (level) => {
-    if (level >= 5) return 'from-amber-600 to-orange-700';
-    if (level >= 3) return 'from-amber-500 to-orange-600';
-    return 'from-yellow-600 to-amber-600';
+  const handleGameScore = (score) => {
+    setGameScore(score);
+    toast.success(`Great job! You earned ${score} points! 🎉`);
   };
 
-  const canWater = () => {
-    if (!lastWatered) return true;
-    const hoursSinceWatered = (new Date() - new Date(lastWatered)) / (1000 * 60 * 60);
-    return hoursSinceWatered >= 1; // Can water every hour
+  const getPlantEmoji = (level) => {
+    const emojis = ['🌱', '🌿', '🌳', '🌲', '🌴', '🌸', '🌺', '🌻', '🌷', '🌹'];
+    return emojis[Math.min(level - 1, emojis.length - 1)];
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
-      </div>
-    );
-  }
+  const getMoodColor = (mood) => {
+    const colors = {
+      happy: 'from-green-400 to-emerald-500',
+      thirsty: 'from-yellow-400 to-orange-500',
+      sad: 'from-blue-400 to-indigo-500',
+      dying: 'from-red-400 to-pink-500'
+    };
+    return colors[mood] || colors.happy;
+  };
+
+  const getMoodEmoji = (mood) => {
+    const emojis = {
+      happy: '😊',
+      thirsty: '😰',
+      sad: '😢',
+      dying: '💀'
+    };
+    return emojis[mood] || emojis.happy;
+  };
+
+  const getRarityColor = (rarity) => {
+    const colors = {
+      common: 'text-gray-500',
+      rare: 'text-blue-500',
+      epic: 'text-purple-500',
+      legendary: 'text-yellow-500'
+    };
+    return colors[rarity] || colors.common;
+  };
+
+  const getRarityBg = (rarity) => {
+    const colors = {
+      common: 'bg-gray-100',
+      rare: 'bg-blue-100',
+      epic: 'bg-purple-100',
+      legendary: 'bg-yellow-100'
+    };
+    return colors[rarity] || colors.common;
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-            <Leaf className="w-5 h-5 text-green-600" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800">Plant Care</h1>
-            <p className="text-gray-600">Nurture your virtual companion</p>
-          </div>
-        </div>
-        <div className="flex items-center space-x-2 text-sm text-gray-500">
-          <Sparkles className="w-4 h-4" />
-          <span>Level {plant?.growthLevel || 1}</span>
-        </div>
-      </div>
-
-      {/* Advanced 3D Plant Display - FAB Style */}
-      <motion.div 
-        className="card overflow-hidden relative"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        style={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          minHeight: '500px'
-        }}
-      >
-        {/* 3D Environment Background */}
-        <div className="absolute inset-0">
-          {/* Sky Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-b from-blue-200 via-blue-100 to-green-100 opacity-60"></div>
-          
-          {/* Floating Particles */}
-          {[...Array(20)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-1 h-1 bg-white rounded-full opacity-30"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
-              animate={{
-                y: [0, -20, 0],
-                opacity: [0.3, 0.8, 0.3],
-                scale: [1, 1.5, 1]
-              }}
-              transition={{
-                duration: 3 + Math.random() * 2,
-                repeat: Infinity,
-                delay: Math.random() * 2
-              }}
-            />
-          ))}
-          
-          {/* Light Rays */}
-          <div className="absolute inset-0">
-            {[...Array(5)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-px bg-gradient-to-b from-yellow-200 to-transparent opacity-40"
-                style={{
-                  height: '200px',
-                  left: `${20 + i * 15}%`,
-                  top: '0',
-                  transformOrigin: 'top',
-                  transform: `rotate(${-30 + i * 15}deg)`
-                }}
-                animate={{
-                  opacity: [0.4, 0.8, 0.4],
-                  scaleY: [1, 1.2, 1]
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  delay: i * 0.5
-                }}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* 3D Plant Scene */}
-        <div className="relative z-10 text-center py-8">
-          {/* Plant Container with 3D Perspective */}
-          <div 
-            className="mx-auto mb-8 relative"
-            style={{ 
-              width: '300px',
-              height: '350px',
-              perspective: '1000px'
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        {/* Floating Leaves */}
+        {[...Array(8)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute text-green-400/20 text-6xl"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [0, -20, 0],
+              rotate: [0, 5, -5, 0],
+              scale: [1, 1.1, 1],
+            }}
+            transition={{
+              duration: 4 + Math.random() * 2,
+              repeat: Infinity,
+              delay: Math.random() * 2,
             }}
           >
-            {/* 3D Pot with Realistic Materials */}
-            <motion.div 
-              className="absolute bottom-0 left-1/2 transform -translate-x-1/2"
-              style={{
-                width: '120px',
-                height: '80px',
-                transformStyle: 'preserve-3d'
-              }}
-              animate={{ 
-                rotateY: [0, 5, -5, 0],
-                rotateX: [0, 2, -2, 0]
-              }}
-              transition={{ duration: 8, repeat: Infinity }}
-            >
-              {/* Pot Base */}
-              <div 
-                className="absolute inset-0 rounded-b-2xl"
-                style={{
-                  background: `linear-gradient(145deg, 
-                    ${getPotColor(plant?.growthLevel || 1).split(' ')[1]} 0%, 
-                    ${getPotColor(plant?.growthLevel || 1).split(' ')[3]} 50%, 
-                    ${getPotColor(plant?.growthLevel || 1).split(' ')[1]} 100%)`,
-                  boxShadow: `
-                    inset 0 4px 8px rgba(0,0,0,0.3),
-                    inset 0 -2px 4px rgba(255,255,255,0.2),
-                    0 12px 24px rgba(0,0,0,0.4),
-                    0 0 0 1px rgba(0,0,0,0.1)
-                  `,
-                  transform: 'translateZ(0px)'
-                }}
-              />
-              
-              {/* Pot Rim with Metallic Effect */}
-              <div 
-                className="absolute top-0 left-0 right-0 h-4 rounded-t-2xl"
-                style={{
-                  background: `linear-gradient(135deg, 
-                    #fbbf24 0%, 
-                    #f59e0b 25%, 
-                    #d97706 50%, 
-                    #b45309 75%, 
-                    #92400e 100%)`,
-                  boxShadow: `
-                    inset 0 2px 4px rgba(255,255,255,0.3),
-                    inset 0 -1px 2px rgba(0,0,0,0.2),
-                    0 2px 8px rgba(0,0,0,0.3)
-                  `,
-                  transform: 'translateZ(2px)'
-                }}
-              />
-              
-              {/* Pot Inner Shadow */}
-              <div 
-                className="absolute top-4 left-2 right-2 bottom-2 rounded-b-xl"
-                style={{
-                  background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.4) 100%)',
-                  transform: 'translateZ(-1px)'
-                }}
-              />
-            </motion.div>
-            
-            {/* 3D Plant Stem with Realistic Texture */}
-            <motion.div 
-              className="absolute bottom-20 left-1/2 transform -translate-x-1/2"
-              style={{
-                width: '8px',
-                height: '120px',
-                background: `linear-gradient(to top, 
-                  #166534 0%, 
-                  #15803d 20%, 
-                  #16a34a 40%, 
-                  #22c55e 60%, 
-                  #4ade80 80%, 
-                  #86efac 100%)`,
-                borderRadius: '4px',
-                boxShadow: `
-                  2px 0 8px rgba(0,0,0,0.3),
-                  -2px 0 8px rgba(0,0,0,0.3),
-                  inset 1px 0 2px rgba(255,255,255,0.2),
-                  inset -1px 0 2px rgba(0,0,0,0.2)
-                `,
-                transform: 'translateZ(1px)'
-              }}
-              animate={{ 
-                rotate: [0, 1, -1, 0],
-                scale: [1, 1.02, 1]
-              }}
-              transition={{ duration: 6, repeat: Infinity }}
-            />
-            
-            {/* Advanced 3D Leaves with Realistic Shading */}
-            <motion.div 
-              className="absolute top-16 left-1/2 transform -translate-x-1/2"
-              style={{ transformStyle: 'preserve-3d' }}
-              animate={{ 
-                rotate: [0, 2, -2, 0],
-                scale: [1, 1.05, 1]
-              }}
-              transition={{ duration: 7, repeat: Infinity }}
-            >
-              {/* Main Central Leaf */}
-              <motion.div 
-                className="absolute left-1/2 top-0 transform -translate-x-1/2"
-                style={{
-                  width: '80px',
-                  height: '80px',
-                  background: `radial-gradient(ellipse at 30% 30%, 
-                    rgba(255,255,255,0.4) 0%, 
-                    transparent 50%), 
-                    linear-gradient(135deg, 
-                    ${getPlantColor(plant?.growthLevel || 1).split(' ')[1]} 0%, 
-                    ${getPlantColor(plant?.growthLevel || 1).split(' ')[3]} 100%)`,
-                  borderRadius: '50% 20% 50% 20%',
-                  boxShadow: `
-                    0 8px 32px rgba(0,0,0,0.3),
-                    inset 0 2px 8px rgba(255,255,255,0.3),
-                    inset 0 -2px 4px rgba(0,0,0,0.2),
-                    0 0 0 1px rgba(0,0,0,0.1)
-                  `,
-                  transform: 'translateZ(2px) rotateX(10deg)'
-                }}
-                animate={{
-                  rotateX: [10, 15, 10],
-                  rotateY: [0, 5, 0]
-                }}
-                transition={{ duration: 5, repeat: Infinity }}
-              >
-                {/* Leaf Veins */}
-                <div className="absolute inset-4 border border-green-300 rounded-full opacity-20"></div>
-                <div className="absolute inset-6 border border-green-200 rounded-full opacity-15"></div>
-                <div className="absolute inset-8 border border-green-100 rounded-full opacity-10"></div>
-              </motion.div>
-              
-              {/* Side Leaves with Individual Animation */}
-              {[...Array(4)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute"
-                  style={{
-                    width: '50px',
-                    height: '50px',
-                    left: `${i < 2 ? -30 : 30}px`,
-                    top: `${i % 2 === 0 ? -10 : 20}px`,
-                    background: `radial-gradient(ellipse at 30% 30%, 
-                      rgba(255,255,255,0.3) 0%, 
-                      transparent 50%), 
-                      linear-gradient(135deg, 
-                      #4ade80 0%, 
-                      #059669 100%)`,
-                    borderRadius: '50% 20% 50% 20%',
-                    boxShadow: `
-                      0 4px 16px rgba(0,0,0,0.2),
-                      inset 0 1px 4px rgba(255,255,255,0.2),
-                      inset 0 -1px 2px rgba(0,0,0,0.1)
-                    `,
-                    transform: `translateZ(${1 + i * 0.5}px) rotateX(${10 + i * 5}deg) rotateY(${i < 2 ? -15 : 15}deg)`
-                  }}
-                  animate={{ 
-                    rotate: [0, i % 2 === 0 ? -3 : 3, 0],
-                    scale: [1, 1.03, 1],
-                    rotateX: [10 + i * 5, 15 + i * 5, 10 + i * 5]
-                  }}
-                  transition={{ 
-                    duration: 6 + i, 
-                    repeat: Infinity,
-                    delay: i * 0.5
-                  }}
-                />
-              ))}
-            </motion.div>
-            
-            {/* Growth Sparkles with Enhanced Effects */}
-            {plant?.growthLevel > 1 && (
-              <motion.div 
-                className="absolute -top-8 left-1/2 transform -translate-x-1/2"
-                animate={{ 
-                  y: [0, -15, 0],
-                  rotate: [0, 180, 360],
-                  scale: [1, 1.3, 1]
-                }}
-                transition={{ duration: 3, repeat: Infinity }}
-              >
-                <Sparkles className="w-10 h-10 text-yellow-300 drop-shadow-2xl" />
-                {/* Additional Sparkle Particles */}
-                {[...Array(6)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className="absolute w-1 h-1 bg-yellow-300 rounded-full"
-                    style={{
-                      left: `${Math.cos(i * 60 * Math.PI / 180) * 20}px`,
-                      top: `${Math.sin(i * 60 * Math.PI / 180) * 20}px`
-                    }}
-                    animate={{
-                      scale: [0, 1, 0],
-                      opacity: [0, 1, 0]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      delay: i * 0.2
-                    }}
-                  />
-                ))}
-              </motion.div>
-            )}
-            
-            {/* Health Indicator with Pulse Effect */}
-            <motion.div 
-              className={`absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-6 h-6 rounded-full ${getHealthColor(plant?.healthStatus || 'healthy')}`}
-              style={{
-                boxShadow: `0 0 20px ${getHealthColor(plant?.healthStatus || 'healthy').replace('text-', '')}`,
-                filter: 'blur(1px)'
-              }}
-              animate={{ 
-                scale: [1, 1.3, 1],
-                opacity: [0.7, 1, 0.7],
-                boxShadow: [
-                  `0 0 20px ${getHealthColor(plant?.healthStatus || 'healthy').replace('text-', '')}`,
-                  `0 0 30px ${getHealthColor(plant?.healthStatus || 'healthy').replace('text-', '')}`,
-                  `0 0 20px ${getHealthColor(plant?.healthStatus || 'healthy').replace('text-', '')}`
-                ]
-              }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-          </div>
-          
-          {/* Plant Info with Enhanced Typography */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            <h2 className="text-3xl font-bold text-white mb-2 drop-shadow-lg">
-              Your Wellness Plant
-            </h2>
-            <p className="text-blue-100 mb-6 text-lg drop-shadow-md">
-              Nurture your digital companion with care and mindfulness
-            </p>
+            🍃
           </motion.div>
-          
-          {/* Plant Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <motion.div 
-              className="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30"
-              whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.3)' }}
-              transition={{ duration: 0.2 }}
-            >
-              <div className="flex items-center justify-center mb-2">
-                <TrendingUp className="w-5 h-5 text-white" />
-              </div>
-              <p className="text-sm text-blue-100">Growth Points</p>
-              <p className="text-2xl font-bold text-white">{plant?.growthPoints || 0}</p>
-            </motion.div>
-            
-            <motion.div 
-              className="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30"
-              whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.3)' }}
-              transition={{ duration: 0.2 }}
-            >
-              <div className="flex items-center justify-center mb-2">
-                <Heart className="w-5 h-5 text-white" />
-              </div>
-              <p className="text-sm text-blue-100">Health</p>
-              <p className={`text-lg font-semibold capitalize text-white`}>
-                {plant?.healthStatus || 'healthy'}
-              </p>
-            </motion.div>
-            
-            <motion.div 
-              className="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30"
-              whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.3)' }}
-              transition={{ duration: 0.2 }}
-            >
-              <div className="flex items-center justify-center mb-2">
-                {getWeatherIcon(plant?.weather || 'sunny')}
-              </div>
-              <p className="text-sm text-blue-100">Weather</p>
-              <p className="text-lg font-semibold capitalize text-white">
-                {plant?.weather || 'sunny'}
-              </p>
-            </motion.div>
-          </div>
-
-          {/* Water Plant Button */}
+        ))}
+        
+        {/* Floating Particles */}
+        {[...Array(12)].map((_, i) => (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 1 }}
-          >
-            <motion.button
-              onClick={handleWaterPlant}
-              disabled={!canWater() || isWatering}
-              className={`relative overflow-hidden px-8 py-4 rounded-2xl font-semibold text-white transition-all duration-300 ${
-                !canWater() || isWatering
-                  ? 'bg-gray-400 cursor-not-allowed' 
-                  : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow-lg hover:shadow-xl'
-              }`}
-              whileHover={!isWatering && canWater() ? { scale: 1.05 } : {}}
-              whileTap={!isWatering && canWater() ? { scale: 0.95 } : {}}
+            key={i}
+            className="absolute w-2 h-2 bg-green-300/30 rounded-full"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              opacity: [0.3, 1, 0.3],
+            }}
+            transition={{
+              duration: 3 + Math.random() * 2,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="container mx-auto px-4 py-8 relative z-10">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-8"
+        >
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent mb-4">
+            🌱 Plant Paradise 🌱
+          </h1>
+          <p className="text-gray-600 text-xl">
+            Nurture your virtual garden and watch it flourish!
+          </p>
+        </motion.div>
+
+        {/* Tab Navigation */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="flex justify-center mb-8"
+        >
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-2 shadow-lg">
+            {[
+              { id: 'care', label: 'Plant Care', icon: Heart },
+              { id: 'collection', label: 'Collection', icon: Star },
+              { id: 'achievements', label: 'Achievements', icon: Award },
+              { id: 'games', label: 'Mini Games', icon: Play }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center space-x-2 px-6 py-3 rounded-xl transition-all duration-200 ${
+                  activeTab === tab.id
+                    ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg'
+                    : 'text-gray-600 hover:bg-green-50'
+                }`}
+              >
+                <tab.icon className="w-5 h-5" />
+                <span className="font-medium">{tab.label}</span>
+              </button>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Main Content */}
+        <AnimatePresence mode="wait">
+          {activeTab === 'care' && (
+            <motion.div
+              key="care"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-8"
             >
-              {/* Water Effect */}
-              {isWatering && (
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-400"
-                  animate={{ 
-                    background: [
-                      'linear-gradient(90deg, #60a5fa 0%, #22d3ee 100%)',
-                      'linear-gradient(90deg, #3b82f6 0%, #06b6d4 100%)',
-                      'linear-gradient(90deg, #60a5fa 0%, #22d3ee 100%)'
-                    ]
-                  }}
-                  transition={{ duration: 1, repeat: Infinity }}
-                />
-              )}
-              
-              <div className="relative z-10 flex items-center space-x-3">
-                {isWatering ? (
-                  <>
+              {/* Plant Status Card */}
+              <div className="bg-white/90 backdrop-blur-xl rounded-3xl p-8 border border-white/30 shadow-2xl">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center space-x-4">
                     <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      animate={{
+                        scale: [1, 1.1, 1],
+                        rotate: [0, 5, -5, 0],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                      className="text-8xl"
+                    >
+                      {getPlantEmoji(plant?.growthLevel || 1)}
+                    </motion.div>
+                    <div>
+                      <h2 className="text-3xl font-bold text-gray-800">
+                        {plant?.name || 'My Plant'}
+                      </h2>
+                      <p className="text-gray-600 text-lg">
+                        {plant?.species || 'Sunflower'} • Level {plant?.growthLevel || 1}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Plant Mood Indicator */}
+                  <div className={`px-4 py-2 rounded-2xl bg-gradient-to-r ${getMoodColor(plantMood)} text-white`}>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-2xl">{getMoodEmoji(plantMood)}</span>
+                      <span className="font-semibold capitalize">{plantMood}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Plant Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                  <div className="bg-gradient-to-r from-blue-100 to-cyan-100 rounded-2xl p-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
+                        <TrendingUp className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-gray-600 text-sm">Growth Points</p>
+                        <p className="text-2xl font-bold text-blue-600">
+                          {plant?.growthPoints || 0}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-r from-green-100 to-emerald-100 rounded-2xl p-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
+                        <Heart className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-gray-600 text-sm">Health</p>
+                        <p className="text-2xl font-bold text-green-600 capitalize">
+                          {plant?.healthStatus || 'Healthy'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl p-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center">
+                        <Calendar className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-gray-600 text-sm">Last Watered</p>
+                        <p className="text-lg font-bold text-yellow-600">
+                          {lastWatered ? new Date(lastWatered).toLocaleDateString() : 'Never'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center">
+                        <Sparkles className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-gray-600 text-sm">Streak</p>
+                        <p className="text-2xl font-bold text-purple-600">
+                          {plant?.streak || 0} days
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Current Music Track Info */}
+                {isPlayingMusic && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-6 p-4 bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl border border-purple-200"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div className="text-4xl">{musicTracks[currentMusicTrack].emoji}</div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-800">{musicTracks[currentMusicTrack].title}</h4>
+                        <p className="text-gray-600 text-sm">{musicTracks[currentMusicTrack].artist}</p>
+                        <p className="text-gray-500 text-xs">{musicTracks[currentMusicTrack].duration}</p>
+                      </div>
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                        className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center"
+                      >
+                        <Music className="w-4 h-4 text-white" />
+                      </motion.div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex flex-wrap gap-4">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleWaterPlant}
+                    disabled={isWatering}
+                    className={`flex items-center space-x-3 px-6 py-4 rounded-2xl font-semibold text-white transition-all duration-200 ${
+                      isWatering
+                        ? 'bg-gray-400 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow-lg'
+                    }`}
+                  >
+                    <motion.div
+                      animate={isWatering ? { rotate: 360 } : {}}
+                      transition={{ duration: 1, repeat: isWatering ? Infinity : 0 }}
                     >
                       <Droplets className="w-6 h-6" />
                     </motion.div>
-                    <span>Watering...</span>
-                  </>
-                ) : (
-                  <>
-                    <Droplets className="w-6 h-6" />
-                    <span>Water Plant</span>
-                  </>
-                )}
+                    <span>{isWatering ? 'Watering...' : 'Water Plant'}</span>
+                  </motion.button>
+
+                  {/* Music Player */}
+                  <div className="flex items-center space-x-2">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handlePrevTrack}
+                      className="p-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 shadow-lg transition-all duration-200"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </motion.button>
+                    
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handlePlayMusic}
+                      className={`flex items-center space-x-3 px-6 py-4 rounded-2xl font-semibold transition-all duration-200 ${
+                        isPlayingMusic
+                          ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white'
+                          : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600'
+                      } shadow-lg`}
+                    >
+                      <Music className="w-6 h-6" />
+                      <span>{isPlayingMusic ? 'Stop Music' : 'Play Music'}</span>
+                    </motion.button>
+                    
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleNextTrack}
+                      className="p-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 shadow-lg transition-all duration-200"
+                    >
+                      <ChevronRight className="w-5 h-5" />
+                    </motion.button>
+                  </div>
+
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex items-center space-x-3 px-6 py-4 rounded-2xl font-semibold bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 shadow-lg transition-all duration-200"
+                  >
+                    <Camera className="w-6 h-6" />
+                    <span>Take Photo</span>
+                  </motion.button>
+
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex items-center space-x-3 px-6 py-4 rounded-2xl font-semibold bg-gradient-to-r from-orange-500 to-yellow-500 text-white hover:from-orange-600 hover:to-yellow-600 shadow-lg transition-all duration-200"
+                  >
+                    <Share2 className="w-6 h-6" />
+                    <span>Share</span>
+                  </motion.button>
+                </div>
               </div>
-            </motion.button>
-          </motion.div>
 
-          {!canWater() && (
-            <p className="text-sm text-blue-100 mt-2">
-              Plant was recently watered. Try again in a bit!
-            </p>
+              {/* Weather and Environment */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white/90 backdrop-blur-xl rounded-3xl p-6 border border-white/30 shadow-2xl">
+                  <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center space-x-2">
+                    <Sun className="w-6 h-6 text-yellow-500" />
+                    <span>Weather</span>
+                  </h3>
+                  <div className="flex items-center space-x-4">
+                    <div className="text-4xl">☀️</div>
+                    <div>
+                      <p className="text-2xl font-bold text-gray-800">Sunny</p>
+                      <p className="text-gray-600">Perfect for growth!</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white/90 backdrop-blur-xl rounded-3xl p-6 border border-white/30 shadow-2xl">
+                  <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center space-x-2">
+                    <Bug className="w-6 h-6 text-green-500" />
+                    <span>Pests</span>
+                  </h3>
+                  <div className="flex items-center space-x-4">
+                    <div className="text-4xl">🛡️</div>
+                    <div>
+                      <p className="text-2xl font-bold text-green-600">Protected</p>
+                      <p className="text-gray-600">No pests detected</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           )}
-        </div>
-      </motion.div>
 
-      {/* Plant Care Tips */}
-      <div className="card">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Plant Care Tips</h3>
-        <div className="space-y-3">
-          <div className="flex items-start space-x-3">
-            <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-              <span className="text-green-600 text-sm">1</span>
-            </div>
-            <div>
-              <p className="font-medium text-gray-800">Complete Tasks</p>
-              <p className="text-sm text-gray-600">Each completed task gives your plant growth points</p>
-            </div>
-          </div>
-          
-          <div className="flex items-start space-x-3">
-            <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-              <span className="text-blue-600 text-sm">2</span>
-            </div>
-            <div>
-              <p className="font-medium text-gray-800">Write Journal Entries</p>
-              <p className="text-sm text-gray-600">Journaling helps your plant grow and stay healthy</p>
-            </div>
-          </div>
-          
-          <div className="flex items-start space-x-3">
-            <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-              <span className="text-purple-600 text-sm">3</span>
-            </div>
-            <div>
-              <p className="font-medium text-gray-800">Water Regularly</p>
-              <p className="text-sm text-gray-600">Water your plant to keep it healthy and growing</p>
-            </div>
-          </div>
-        </div>
+          {activeTab === 'collection' && (
+            <motion.div
+              key="collection"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-gray-800 mb-2">Plant Collection</h2>
+                <p className="text-gray-600">Discover and collect different plant species!</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {plantCollection.map((plant) => (
+                  <motion.div
+                    key={plant.id}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    className={`rounded-3xl p-6 border-2 transition-all duration-200 ${
+                      plant.unlocked
+                        ? 'bg-white/90 backdrop-blur-xl border-green-200 shadow-lg'
+                        : 'bg-gray-100/50 backdrop-blur-xl border-gray-200'
+                    }`}
+                  >
+                    <div className="text-center">
+                      <div className="text-6xl mb-4">{plant.emoji}</div>
+                      <h3 className="text-xl font-bold text-gray-800 mb-2">{plant.name}</h3>
+                      <p className="text-gray-600 mb-3 capitalize">{plant.type}</p>
+                      <div className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getRarityBg(plant.rarity)} ${getRarityColor(plant.rarity)}`}>
+                        {plant.rarity}
+                      </div>
+                      {!plant.unlocked && (
+                        <p className="text-sm text-gray-500 mt-3">
+                          Complete tasks to unlock
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'achievements' && (
+            <motion.div
+              key="achievements"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-gray-800 mb-2">Achievements</h2>
+                <p className="text-gray-600">Track your plant care progress!</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {achievements.map((achievement) => (
+                  <motion.div
+                    key={achievement.id}
+                    whileHover={{ scale: 1.02 }}
+                    className={`rounded-3xl p-6 border-2 transition-all duration-200 ${
+                      achievement.unlocked
+                        ? 'bg-gradient-to-r from-yellow-100 to-orange-100 border-yellow-300 shadow-lg'
+                        : 'bg-gray-100/50 border-gray-200'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${
+                        achievement.unlocked ? 'bg-gradient-to-r from-yellow-500 to-orange-500' : 'bg-gray-400'
+                      }`}>
+                        <achievement.icon className="w-8 h-8 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold text-gray-800 mb-1">{achievement.title}</h3>
+                        <p className="text-gray-600">{achievement.description}</p>
+                        {achievement.unlocked && (
+                          <div className="flex items-center space-x-1 mt-2">
+                            <Star className="w-4 h-4 text-yellow-500" />
+                            <span className="text-sm font-medium text-yellow-600">Unlocked!</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'games' && (
+            <motion.div
+              key="games"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-6"
+            >
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-gray-800 mb-2">Mini Games</h2>
+                <p className="text-gray-600">Have fun while caring for your plants!</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  className="bg-gradient-to-r from-blue-100 to-cyan-100 rounded-3xl p-6 border border-blue-200 shadow-lg cursor-pointer"
+                  onClick={() => handleGameStart('target')}
+                >
+                  <div className="text-center">
+                    <div className="text-6xl mb-4">🎯</div>
+                    <h3 className="text-2xl font-bold text-gray-800 mb-2">Plant Target</h3>
+                    <p className="text-gray-600 mb-4">Water the right plants to earn points!</p>
+                    <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-cyan-600 transition-all duration-200">
+                      Play Now
+                    </button>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  className="bg-gradient-to-r from-green-100 to-emerald-100 rounded-3xl p-6 border border-green-200 shadow-lg cursor-pointer"
+                  onClick={() => handleGameStart('puzzle')}
+                >
+                  <div className="text-center">
+                    <div className="text-6xl mb-4">🧩</div>
+                    <h3 className="text-2xl font-bold text-gray-800 mb-2">Plant Puzzle</h3>
+                    <p className="text-gray-600 mb-4">Match plant parts to grow faster!</p>
+                    <button className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl font-semibold hover:from-green-600 hover:to-emerald-600 transition-all duration-200">
+                      Play Now
+                    </button>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-3xl p-6 border border-purple-200 shadow-lg cursor-pointer"
+                  onClick={() => handleGameStart('music')}
+                >
+                  <div className="text-center">
+                    <div className="text-6xl mb-4">🎵</div>
+                    <h3 className="text-2xl font-bold text-gray-800 mb-2">Music Garden</h3>
+                    <p className="text-gray-600 mb-4">Create melodies for your plants!</p>
+                    <button className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:from-purple-600 hover:to-pink-600 transition-all duration-200">
+                      Play Now
+                    </button>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-3xl p-6 border border-yellow-200 shadow-lg cursor-pointer"
+                >
+                  <div className="text-center">
+                    <div className="text-6xl mb-4">🏃</div>
+                    <h3 className="text-2xl font-bold text-gray-800 mb-2">Garden Run</h3>
+                    <p className="text-gray-600 mb-4">Run through your garden collecting seeds!</p>
+                    <button className="px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-xl font-semibold hover:from-yellow-600 hover:to-orange-600 transition-all duration-200">
+                      Coming Soon
+                    </button>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Game Components */}
+        {activeGame === 'target' && (
+          <PlantTargetGame onClose={handleGameClose} onScore={handleGameScore} />
+        )}
+        {activeGame === 'music' && (
+          <MusicGardenGame onClose={handleGameClose} />
+        )}
+        {activeGame === 'puzzle' && (
+          <PlantPuzzleGame onClose={handleGameClose} />
+        )}
       </div>
-
-      {/* Last Watered Info */}
-      {lastWatered && (
-        <div className="card">
-          <div className="flex items-center space-x-2 text-gray-600">
-            <Calendar className="w-4 h-4" />
-            <span className="text-sm">
-              Last watered: {new Date(lastWatered).toLocaleString()}
-            </span>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

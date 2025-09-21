@@ -21,6 +21,8 @@ import Badges from './pages/Badges/Badges';
 import Chat from './pages/Chat/Chat';
 import Profile from './pages/Profile/Profile';
 import Games from './pages/Games/Games';
+import Meditation from './pages/Meditation/Meditation';
+import EmergencyServices from './pages/Emergency/EmergencyServices';
 
 function App() {
   const { checkAuth, isLoading } = useAuthStore();
@@ -72,11 +74,13 @@ function App() {
             <Route path="plant" element={<PlantCare />} />
             <Route path="mood" element={<MoodTracking />} />
             <Route path="breathing" element={<BreathingExercises />} />
+            <Route path="meditation" element={<Meditation />} />
             <Route path="store" element={<Store />} />
             <Route path="badges" element={<Badges />} />
             <Route path="chat" element={<Chat />} />
             <Route path="games" element={<Games />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="emergency" element={<EmergencyServices />} />
           </Route>
           
           {/* Catch all route */}

@@ -76,6 +76,8 @@ import voiceRouter from './routes/voiceRoutes.js';
 import chatRouter from './routes/chatRoute.js';
 import storeRouter from './routes/storeRoute.js';
 import musicRouter from './routes/musicRoutes.js'; // The new music route
+import meditationRouter from './routes/meditationRoutes.js'; // Meditation and music sidebar
+import emergencyRouter from './routes/emergencyRoutes.js';
 
 
 // --- Route Declarations ---
@@ -92,6 +94,8 @@ app.use("/api/v1/voice", voiceRouter);
 app.use("/api/v1/chat", chatRouter);
 app.use("/api/v1/store", storeRouter);
 app.use("/api/v1/music", musicRouter); // The new music route
+app.use("/api/v1/meditation", meditationRouter); // Meditation and music sidebar
+app.use("/api/v1/emergency", emergencyRouter);
 
 
 // --- Main Execution Block ---

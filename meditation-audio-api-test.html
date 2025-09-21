@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meditation Audio Test - Web Audio API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            backdrop-filter: blur(10px);
+        }
+        button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success { background: rgba(34, 197, 94, 0.3); }
+        .error { background: rgba(239, 68, 68, 0.3); }
+        .info { background: rgba(59, 130, 246, 0.3); }
+        .warning { background: rgba(245, 158, 11, 0.3); }
+    </style>
+</head>
+<body>
+    <h1>🎵 Meditation Audio Test - Web Audio API</h1>
+    <p>Testing the Web Audio API fallback for meditation music...</p>
+
+    <div class="test-section">
+        <h3>Test 1: Web Audio API Meditation Tone</h3>
+        <button onclick="playMeditationTone()">Play Meditation Tone</button>
+        <button onclick="stopAudio()">Stop Audio</button>
+        <div id="status1" class="status info">Ready to test</div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 2: Ocean Waves Simulation</h3>
+        <button onclick="playOceanWaves()">Play Ocean Waves</button>
+        <button onclick="stopAudio()">Stop Audio</button>
+        <div id="status2" class="status info">Ready to test</div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 3: Forest Rain Simulation</h3>
+        <button onclick="playForestRain()">Play Forest Rain</button>
+        <button onclick="stopAudio()">Stop Audio</button>
+        <div id="status2" class="status info">Ready to test</div>
+    </div>
+
+    <div class="test-section">
+        <h3>Browser Compatibility</h3>
+        <div id="compatibility" class="status info">Checking browser support...</div>
+    </div>
+
+    <script>
+        let audioContext = null;
+        let currentOscillators = [];
+
+        // Check browser compatibility
+        function checkCompatibility() {
+            const compatibilityDiv = document.getElementById('compatibility');
+            
+            if (window.AudioContext || window.webkitAudioContext) {
+                compatibilityDiv.innerHTML = '✅ Web Audio API is supported';
+                compatibilityDiv.className = 'status success';
+            } else {
+                compatibilityDiv.innerHTML = '❌ Web Audio API is not supported';
+                compatibilityDiv.className = 'status error';
+            }
+        }
+
+        // Initialize audio context
+        function initAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return audioContext;
+        }
+
+        // Stop all audio
+        function stopAudio() {
+            currentOscillators.forEach(osc => {
+                try {
+                    osc.stop();
+                } catch (e) {
+                    // Oscillator might already be stopped
+                }
+            });
+            currentOscillators = [];
+        }
+
+        // Play meditation tone
+        function playMeditationTone() {
+            try {
+                const ctx = initAudioContext();
+                const oscillator = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(ctx.destination);
+                
+                // Create a gentle meditation tone
+                oscillator.frequency.setValueAtTime(220, ctx.currentTime); // A3 note
+                oscillator.type = 'sine';
+                
+                // Gentle volume envelope
+                gainNode.gain.setValueAtTime(0, ctx.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.5);
+                gainNode.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 2);
+                gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + 2.5);
+                
+                oscillator.start(ctx.currentTime);
+                oscillator.stop(ctx.currentTime + 2.5);
+                
+                currentOscillators.push(oscillator);
+                
+                document.getElementById('status1').innerHTML = '✅ Playing meditation tone...';
+                document.getElementById('status1').className = 'status success';
+                
+            } catch (error) {
+                document.getElementById('status1').innerHTML = '❌ Error: ' + error.message;
+                document.getElementById('status1').className = 'status error';
+            }
+        }
+
+        // Play ocean waves simulation
+        function playOceanWaves() {
+            try {
+                const ctx = initAudioContext();
+                
+                // Create multiple oscillators for wave effect
+                for (let i = 0; i < 3; i++) {
+                    const oscillator = ctx.createOscillator();
+                    const gainNode = ctx.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(ctx.destination);
+                    
+                    // Different frequencies for wave layers
+                    const frequencies = [60, 80, 120];
+                    oscillator.frequency.setValueAtTime(frequencies[i], ctx.currentTime);
+                    oscillator.type = 'sine';
+                    
+                    // Random volume variations
+                    gainNode.gain.setValueAtTime(0, ctx.currentTime);
+                    gainNode.gain.linearRampToValueAtTime(0.05 + Math.random() * 0.05, ctx.currentTime + 1);
+                    
+                    oscillator.start(ctx.currentTime);
+                    oscillator.stop(ctx.currentTime + 5);
+                    
+                    currentOscillators.push(oscillator);
+                }
+                
+                document.getElementById('status2').innerHTML = '✅ Playing ocean waves...';
+                document.getElementById('status2').className = 'status success';
+                
+            } catch (error) {
+                document.getElementById('status2').innerHTML = '❌ Error: ' + error.message;
+                document.getElementById('status2').className = 'status error';
+            }
+        }
+
+        // Play forest rain simulation
+        function playForestRain() {
+            try {
+                const ctx = initAudioContext();
+                
+                // Create rain drop sounds
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(() => {
+                        const oscillator = ctx.createOscillator();
+                        const gainNode = ctx.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(ctx.destination);
+                        
+                        // High frequency for rain drops
+                        oscillator.frequency.setValueAtTime(800 + Math.random() * 400, ctx.currentTime);
+                        oscillator.type = 'sine';
+                        
+                        // Quick fade in/out
+                        gainNode.gain.setValueAtTime(0, ctx.currentTime);
+                        gainNode.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.1);
+                        gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.3);
+                        
+                        oscillator.start(ctx.currentTime);
+                        oscillator.stop(ctx.currentTime + 0.3);
+                        
+                        currentOscillators.push(oscillator);
+                    }, i * 200);
+                }
+                
+                document.getElementById('status2').innerHTML = '✅ Playing forest rain...';
+                document.getElementById('status2').className = 'status success';
+                
+            } catch (error) {
+                document.getElementById('status2').innerHTML = '❌ Error: ' + error.message;
+                document.getElementById('status2').className = 'status error';
+            }
+        }
+
+        // Initialize on page load
+        window.onload = function() {
+            checkCompatibility();
+        };
+    </script>
+</body>
+</html>

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import IntelligentMoodDetector from '../../services/intelligentMoodDetector';
+import PassiveVoiceAnalysis from '../../services/passiveVoiceAnalysis';
 import { 
   TrendingUp, 
   Calendar, 
@@ -26,13 +28,16 @@ import {
   Gem,
   Flame,
   Rainbow,
-  Gamepad2
+  Gamepad2,
+  Bot,
+  AlertTriangle
 } from 'lucide-react';
 import useAuthStore from '../../stores/authStore';
 import { taskAPI, journalAPI, moodAPI, plantAPI, breathingAPI, badgeAPI } from '../../services/api';
 import MoodCalendar from '../../components/Features/MoodCalendar';
 import HabitTracker from '../../components/Features/HabitTracker';
 import MeditationTimer from '../../components/Features/MeditationTimer';
+import AIAssistant from '../../components/AIAssistant/AIAssistant';
 
 const Dashboard = () => {
   const { user } = useAuthStore();
@@ -48,9 +53,32 @@ const Dashboard = () => {
   const [recentTasks, setRecentTasks] = useState([]);
   const [recentJournal, setRecentJournal] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAIAssistantOpen, setIsAIAssistantOpen] = useState(false);
+
+  // Intelligent Mood Detection State
+  const [moodDetector] = useState(new IntelligentMoodDetector());
+  const [passiveVoiceAnalysis] = useState(new PassiveVoiceAnalysis());
+  const [currentMood, setCurrentMood] = useState('neutral');
+  const [moodConfidence, setMoodConfidence] = useState(0);
+  const [activeInterventions, setActiveInterventions] = useState([]);
+  const [userBehavior, setUserBehavior] = useState({});
 
   useEffect(() => {
     fetchDashboardData();
+    
+    // Initialize intelligent mood detection
+    initializeMoodDetection();
+    
+    // Track user behavior
+    trackUserBehavior();
+    
+    // Listen for mood changes
+    window.addEventListener('moodChange', handleMoodChange);
+    
+    return () => {
+      window.removeEventListener('moodChange', handleMoodChange);
+      passiveVoiceAnalysis.cleanup();
+    };
   }, []);
 
   const fetchDashboardData = async () => {
@@ -84,6 +112,110 @@ const Dashboard = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Initialize intelligent mood detection
+  const initializeMoodDetection = async () => {
+    try {
+      const initialized = await passiveVoiceAnalysis.initialize();
+      if (initialized) {
+        passiveVoiceAnalysis.startPassiveMonitoring();
+        console.log('Intelligent mood detection initialized');
+      }
+    } catch (error) {
+      console.log('Mood detection initialization failed:', error);
+    }
+  };
+
+  // Track user behavior patterns
+  const trackUserBehavior = () => {
+    const behavior = {
+      timeOnEmergency: 0,
+      timeOnJournal: 0,
+      timeOnMeditation: 0,
+      timeOnPlant: 0,
+      rapidClicks: 0,
+      hesitationClicks: 0,
+      erraticScrolling: false,
+      slowScrolling: false,
+      interactionFrequency: 0.5,
+      taskCompletionRate: 0.5
+    };
+
+    // Track page time
+    const startTime = Date.now();
+    const trackPageTime = () => {
+      const timeSpent = Date.now() - startTime;
+      const currentPath = window.location.pathname;
+      
+      if (currentPath.includes('emergency')) behavior.timeOnEmergency += timeSpent;
+      if (currentPath.includes('journal')) behavior.timeOnJournal += timeSpent;
+      if (currentPath.includes('meditation')) behavior.timeOnMeditation += timeSpent;
+      if (currentPath.includes('plant')) behavior.timeOnPlant += timeSpent;
+    };
+
+    // Track clicks
+    let clickCount = 0;
+    let lastClickTime = 0;
+    
+    const trackClicks = (e) => {
+      const now = Date.now();
+      if (now - lastClickTime < 200) {
+        behavior.rapidClicks++;
+      } else {
+        behavior.hesitationClicks++;
+      }
+      lastClickTime = now;
+      clickCount++;
+    };
+
+    // Track scrolling
+    let scrollCount = 0;
+    let lastScrollTime = 0;
+    
+    const trackScrolling = (e) => {
+      const now = Date.now();
+      if (now - lastScrollTime < 100) {
+        behavior.erraticScrolling = true;
+      }
+      scrollCount++;
+      lastScrollTime = now;
+    };
+
+    // Add event listeners
+    document.addEventListener('click', trackClicks);
+    document.addEventListener('scroll', trackScrolling);
+    window.addEventListener('beforeunload', trackPageTime);
+
+    // Update behavior state
+    setUserBehavior(behavior);
+
+    // Cleanup
+    return () => {
+      document.removeEventListener('click', trackClicks);
+      document.removeEventListener('scroll', trackScrolling);
+      window.removeEventListener('beforeunload', trackPageTime);
+    };
+  };
+
+  // Handle mood change events
+  const handleMoodChange = (event) => {
+    const { mood, confidence, triggers, severity } = event.detail;
+    
+    setCurrentMood(mood);
+    setMoodConfidence(confidence);
+    
+    // Generate interventions based on mood
+    const interventions = moodDetector.generatePersonalizedInterventions({
+      mood,
+      confidence,
+      triggers,
+      severity
+    });
+    
+    setActiveInterventions(interventions);
+    
+    console.log('Mood detected:', { mood, confidence, triggers, severity });
   };
 
   const quickActions = [
@@ -168,26 +300,15 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-secondary-50 to-accent-50 relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"
+          className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-primary-300/30 to-secondary-300/30 rounded-full blur-3xl"
           animate={{
             x: [0, 100, 0],
             y: [0, -50, 0],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        <motion.div
-          className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-pink-400/20 to-cyan-400/20 rounded-full blur-3xl"
-          animate={{
-            x: [0, -100, 0],
-            y: [0, 50, 0],
+            scale: [1, 1.1, 1],
           }}
           transition={{
             duration: 25,
@@ -195,32 +316,103 @@ const Dashboard = () => {
             ease: "easeInOut"
           }}
         />
+        <motion.div
+          className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-accent-300/30 to-primary-300/30 rounded-full blur-3xl"
+          animate={{
+            x: [0, -80, 0],
+            y: [0, 60, 0],
+            scale: [1, 0.9, 1],
+          }}
+          transition={{
+            duration: 30,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2
+          }}
+        />
+        <motion.div
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-secondary-300/20 to-accent-300/20 rounded-full blur-2xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.6, 0.3],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        {/* Floating Particles */}
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 bg-gradient-to-r from-primary-400 to-secondary-400 rounded-full opacity-60"
+            style={{
+              left: `${20 + i * 15}%`,
+              top: `${30 + i * 10}%`,
+            }}
+            animate={{
+              y: [0, -20, 0],
+              opacity: [0.6, 1, 0.6],
+            }}
+            transition={{
+              duration: 3 + i * 0.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: i * 0.5
+            }}
+          />
+        ))}
       </div>
 
       <motion.div 
-        className="relative space-y-8 p-6"
+        className="relative space-y-8 p-6 z-10"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.8 }}
       >
         {/* Hero Welcome Section */}
         <motion.div 
-          className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-8 text-white shadow-2xl"
+          className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary-600 via-secondary-600 to-accent-600 p-8 text-white shadow-2xl backdrop-blur-sm"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
-          {/* Floating Elements */}
+          {/* Enhanced Floating Elements */}
           <div className="absolute inset-0 overflow-hidden">
             <motion.div
-              className="absolute top-4 right-4 w-20 h-20 bg-white/10 rounded-full blur-xl"
-              animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
+              className="absolute top-4 right-4 w-20 h-20 bg-white/20 rounded-full blur-xl"
+              animate={{ 
+                scale: [1, 1.3, 1], 
+                opacity: [0.3, 0.7, 0.3],
+                rotate: [0, 180, 360]
+              }}
+              transition={{ duration: 6, repeat: Infinity }}
+            />
+            <motion.div
+              className="absolute bottom-4 left-4 w-16 h-16 bg-white/20 rounded-full blur-xl"
+              animate={{ 
+                scale: [1.2, 1, 1.2], 
+                opacity: [0.6, 0.3, 0.6],
+                rotate: [360, 180, 0]
+              }}
               transition={{ duration: 4, repeat: Infinity }}
             />
             <motion.div
-              className="absolute bottom-4 left-4 w-16 h-16 bg-white/10 rounded-full blur-xl"
-              animate={{ scale: [1.2, 1, 1.2], opacity: [0.6, 0.3, 0.6] }}
-              transition={{ duration: 3, repeat: Infinity }}
+              className="absolute top-1/2 left-1/4 w-12 h-12 bg-white/15 rounded-full blur-lg"
+              animate={{ 
+                y: [0, -20, 0],
+                opacity: [0.4, 0.8, 0.4]
+              }}
+              transition={{ duration: 5, repeat: Infinity, delay: 1 }}
+            />
+            <motion.div
+              className="absolute bottom-1/3 right-1/4 w-8 h-8 bg-white/25 rounded-full blur-md"
+              animate={{ 
+                x: [0, 15, 0],
+                opacity: [0.5, 0.9, 0.5]
+              }}
+              transition={{ duration: 3.5, repeat: Infinity, delay: 2 }}
             />
           </div>
 
@@ -238,7 +430,7 @@ const Dashboard = () => {
                 <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
                   Welcome back, {user?.username}! ✨
                 </h1>
-                <p className="text-blue-100 text-lg">Ready to continue your wellness journey?</p>
+                <p className="text-white/90 text-lg font-medium">Ready to continue your wellness journey?</p>
               </div>
             </motion.div>
 
@@ -261,6 +453,60 @@ const Dashboard = () => {
                 <span className="font-semibold">{stats.badges} Badges</span>
               </div>
             </motion.div>
+
+            {/* Intelligent Mood Detection & Interventions */}
+            {activeInterventions.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="mt-8 p-6 bg-white/10 backdrop-blur-sm rounded-3xl border border-white/20"
+              >
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-500 rounded-2xl flex items-center justify-center">
+                    <Brain className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white">
+                      💡 Personalized Support
+                    </h3>
+                    <p className="text-white/80 text-sm">
+                      Detected mood: {currentMood.charAt(0).toUpperCase() + currentMood.slice(1)} 
+                      ({Math.round(moodConfidence * 100)}% confidence)
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {activeInterventions.map((intervention, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.7 + index * 0.1 }}
+                      className="p-4 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 hover:bg-white/10 transition-all duration-200"
+                    >
+                      <div className="flex items-start space-x-3">
+                        <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                          <Sparkles className="w-4 h-4 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-white mb-2">
+                            {intervention.type.replace('_', ' ').toUpperCase()}
+                          </h4>
+                          <p className="text-white/80 text-sm mb-3">
+                            {intervention.content}
+                          </p>
+                          <button className="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg text-sm font-medium hover:from-blue-600 hover:to-cyan-600 transition-all duration-200 hover:scale-105">
+                            Try This
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
           </div>
         </motion.div>
 
@@ -276,16 +522,16 @@ const Dashboard = () => {
             return (
               <motion.div
                 key={index}
-                className="group relative overflow-hidden rounded-2xl bg-white/80 backdrop-blur-xl border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300"
+                className="group relative overflow-hidden rounded-3xl bg-white/90 backdrop-blur-xl border border-white/30 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:border-white/50"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 + index * 0.1 }}
-                whileHover={{ y: -5, scale: 1.02 }}
+                whileHover={{ y: -8, scale: 1.03, rotateY: 2 }}
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${card.color} opacity-10 group-hover:opacity-20 transition-opacity duration-300`} />
                 <div className="relative p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className={`w-14 h-14 bg-gradient-to-br ${card.color} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                    <div className={`w-16 h-16 bg-gradient-to-br ${card.color} rounded-3xl flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
                       <Icon className="w-7 h-7 text-white" />
                     </div>
                     <motion.div
@@ -306,7 +552,7 @@ const Dashboard = () => {
 
         {/* Quick Actions */}
         <motion.div 
-          className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-xl"
+          className="bg-white/90 backdrop-blur-xl rounded-3xl p-8 border border-white/30 shadow-2xl hover:shadow-3xl transition-all duration-500"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
@@ -332,9 +578,9 @@ const Dashboard = () => {
                 >
                   <Link
                     to={action.link}
-                    className="group block p-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/30 hover:border-white/50 transition-all duration-300 hover:shadow-xl"
+                    className="group block p-6 bg-white/70 backdrop-blur-sm rounded-3xl border border-white/40 hover:border-white/60 transition-all duration-500 hover:shadow-2xl hover:bg-white/80"
                   >
-                    <div className={`w-16 h-16 bg-gradient-to-br ${action.gradient} rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg ${action.glowColor}`}>
+                    <div className={`w-16 h-16 bg-gradient-to-br ${action.gradient} rounded-3xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-xl ${action.glowColor}`}>
                       <Icon className="w-8 h-8 text-white" />
                     </div>
                     <h3 className="font-semibold text-gray-800 mb-2 group-hover:text-gray-900 transition-colors">{action.title}</h3>
@@ -638,6 +884,117 @@ const Dashboard = () => {
           </div>
         </motion.div>
       </motion.div>
+
+      {/* AI Assistant */}
+      <AIAssistant 
+        isOpen={isAIAssistantOpen}
+        onClose={() => setIsAIAssistantOpen(false)}
+        onMinimize={() => setIsAIAssistantOpen(false)}
+      />
+
+         {/* Enhanced Floating AI Assistant Button */}
+         <motion.button
+           onClick={() => setIsAIAssistantOpen(true)}
+           className="fixed bottom-8 right-24 w-20 h-20 bg-gradient-to-r from-primary-500 via-secondary-500 to-accent-500 text-white rounded-full shadow-2xl hover:shadow-3xl transition-all duration-500 flex items-center justify-center z-50 backdrop-blur-sm border border-white/20"
+           whileHover={{ 
+             scale: 1.15, 
+             rotate: 5,
+             boxShadow: "0 0 30px rgba(59, 130, 246, 0.6)"
+           }}
+           whileTap={{ scale: 0.9 }}
+           initial={{ opacity: 0, scale: 0, rotate: -180 }}
+           animate={{ opacity: 1, scale: 1, rotate: 0 }}
+           transition={{ 
+             delay: 1.5,
+             type: "spring",
+             stiffness: 200,
+             damping: 15
+           }}
+           title="Open AI Assistant - Drag to move around!"
+         >
+           <Bot className="w-10 h-10" />
+           {/* Pulsing Ring Effect */}
+           <motion.div
+             className="absolute inset-0 rounded-full border-2 border-white/30"
+             animate={{
+               scale: [1, 1.3, 1],
+               opacity: [0.7, 0, 0.7],
+             }}
+             transition={{
+               duration: 2,
+               repeat: Infinity,
+               ease: "easeInOut"
+             }}
+           />
+           {/* AI Assistant Label */}
+           <motion.div
+             className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-black/90 text-white text-xs px-3 py-1 rounded-lg opacity-0 pointer-events-none whitespace-nowrap"
+             animate={{
+               opacity: [0, 1, 0],
+               y: [0, -3, 0]
+             }}
+             transition={{
+               duration: 4,
+               repeat: Infinity,
+               ease: "easeInOut",
+               delay: 3
+             }}
+           >
+             AI Assistant
+           </motion.div>
+         </motion.button>
+
+         {/* Emergency Services Button */}
+         <motion.button
+           onClick={() => window.location.href = '/emergency'}
+           className="fixed bottom-8 left-8 w-16 h-16 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-full shadow-2xl hover:shadow-3xl transition-all duration-500 flex items-center justify-center z-50 backdrop-blur-sm border border-white/20"
+           whileHover={{ 
+             scale: 1.15, 
+             rotate: -5,
+             boxShadow: "0 0 30px rgba(239, 68, 68, 0.6)"
+           }}
+           whileTap={{ scale: 0.9 }}
+           initial={{ opacity: 0, scale: 0, rotate: 180 }}
+           animate={{ opacity: 1, scale: 1, rotate: 0 }}
+           transition={{ 
+             delay: 2,
+             type: "spring",
+             stiffness: 200,
+             damping: 15
+           }}
+           title="Emergency Services - Crisis Support"
+         >
+           <AlertTriangle className="w-8 h-8" />
+           {/* Pulsing Ring Effect */}
+           <motion.div
+             className="absolute inset-0 rounded-full border-2 border-red-300"
+             animate={{
+               scale: [1, 1.4, 1],
+               opacity: [0.7, 0, 0.7],
+             }}
+             transition={{
+               duration: 2,
+               repeat: Infinity,
+               ease: "easeInOut"
+             }}
+           />
+           {/* Emergency Label */}
+           <motion.div
+             className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-red-600 text-white text-xs px-3 py-1 rounded-lg opacity-0 pointer-events-none whitespace-nowrap"
+             animate={{
+               opacity: [0, 1, 0],
+               y: [0, -3, 0]
+             }}
+             transition={{
+               duration: 4,
+               repeat: Infinity,
+               ease: "easeInOut",
+               delay: 3
+             }}
+           >
+             Emergency
+           </motion.div>
+         </motion.button>
     </div>
   );
 };

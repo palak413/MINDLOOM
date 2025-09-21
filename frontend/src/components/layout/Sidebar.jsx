@@ -14,7 +14,9 @@ import {
   User,
   LogOut,
   Menu,
-  X
+  X,
+  AlertTriangle,
+  Headphones
 } from 'lucide-react';
 import useAuthStore from '../../stores/authStore';
 
@@ -34,10 +36,12 @@ const Sidebar = ({ onToggle }) => {
     { name: 'Plant Care', href: '/plant', icon: Leaf },
     { name: 'Mood Tracking', href: '/mood', icon: Heart },
     { name: 'Breathing', href: '/breathing', icon: Wind },
+    { name: 'Meditation & Music', href: '/meditation', icon: Headphones },
     { name: 'Games', href: '/games', icon: Gamepad2 },
     { name: 'Store', href: '/store', icon: ShoppingBag },
     { name: 'Badges', href: '/badges', icon: Award },
     { name: 'Chat', href: '/chat', icon: MessageCircle },
+    { name: 'Emergency', href: '/emergency', icon: AlertTriangle, priority: 'high' },
     { name: 'Profile', href: '/profile', icon: User },
   ];
 
@@ -82,15 +86,23 @@ const Sidebar = ({ onToggle }) => {
                 to={item.href}
                 className={({ isActive }) =>
                   `flex items-center ${isCollapsed ? 'justify-center px-2' : 'space-x-3 px-3'} py-2 rounded-lg transition-colors duration-200 ${
-                    isActive
+                    item.priority === 'high'
+                      ? isActive
+                        ? 'bg-red-50 text-red-700 border-r-2 border-red-700'
+                        : 'text-red-600 hover:bg-red-50 hover:text-red-800'
+                      : isActive
                       ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
                       : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'
                   }`
                 }
                 title={isCollapsed ? item.name : ''}
               >
-                <Icon className="w-5 h-5" />
-                {!isCollapsed && <span className="font-medium">{item.name}</span>}
+                <Icon className={`w-5 h-5 ${item.priority === 'high' ? 'text-red-500' : ''}`} />
+                {!isCollapsed && (
+                  <span className={`font-medium ${item.priority === 'high' ? 'text-red-600' : ''}`}>
+                    {item.name}
+                  </span>
+                )}
               </NavLink>
             );
           })}
