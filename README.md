@@ -55,7 +55,18 @@ A comprehensive AI-powered mental wellness application that combines mood tracki
    cd MINDLOOM
    ```
 
-2. **Backend Setup**
+2. **Download ML Models** ⚠️ **REQUIRED**
+   ```bash
+   # Automated download (recommended)
+   npm run download-models
+   
+   # Or verify existing models
+   npm run verify-models
+   ```
+   
+   **Manual Download**: If automated download fails, follow [ML Models Setup Guide](ML_MODELS_SETUP.md)
+
+3. **Backend Setup**
    ```bash
    cd backend
    npm install
@@ -64,16 +75,44 @@ A comprehensive AI-powered mental wellness application that combines mood tracki
    npm start
    ```
 
-3. **Frontend Setup**
+4. **Frontend Setup**
    ```bash
    cd frontend
    npm install
    npm run dev
    ```
 
-4. **Access the application**
+5. **Access the application**
    - Frontend: http://localhost:3000
    - Backend API: http://localhost:8000
+
+### 🤖 ML Models Setup
+
+**Important**: MINDLOOM requires ML models for full AI functionality. These models are too large for GitHub and must be downloaded separately.
+
+#### Quick Setup
+```bash
+# Download models automatically
+npm run download-models
+
+# Verify installation
+npm run verify-models
+```
+
+#### Manual Setup
+1. **Download from Google Drive**: [ML Models Folder](https://drive.google.com/drive/folders/1AbYxAAFPcSYvXUMvx2WJv7NsH83Q6gop)
+2. **Extract to project root**: Models will be placed in correct directories
+3. **Verify**: Run `npm run verify-models`
+
+#### Required Models
+- **CBT Therapy Model** (~255MB) - Cognitive Behavioral Therapy analysis
+- **Voice Emotion Models** (~50MB) - Real-time emotion detection
+- **Enhanced Voice Analysis** (~15MB) - Advanced voice processing
+- **Simple Voice Models** (~8MB) - Basic voice analysis
+
+**Without these models**, the app runs in demo mode with limited AI features.
+
+See [ML_MODELS_SETUP.md](ML_MODELS_SETUP.md) for detailed instructions.
 
 ## 🛠️ Tech Stack
 
