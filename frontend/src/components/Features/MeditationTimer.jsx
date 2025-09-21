@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Icon } from '../Icons/IconSystem';
+import { FaPlay, FaPause, FaStop, FaPlus } from 'react-icons/fa';
+import { IoRefresh } from 'react-icons/io5';
 
 const MeditationTimer = () => {
   const [isActive, setIsActive] = useState(false);
@@ -118,46 +119,20 @@ const MeditationTimer = () => {
 
   return (
     <motion.div
-      className="bg-white rounded-2xl shadow-lg p-6"
+      className="bg-white rounded-2xl shadow-lg p-4 h-[500px] flex flex-col"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
       {/* Header */}
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">Meditation Timer</h2>
-        <p className="text-gray-600">Find peace and mindfulness</p>
-      </div>
-
-      {/* Session Selection */}
-      <div className="mb-8">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Choose Your Practice</h3>
-        <div className="grid grid-cols-2 gap-3">
-          {sessions.map((session) => (
-            <motion.button
-              key={session.id}
-              onClick={() => setSelectedSession(session.id)}
-              className={`p-4 rounded-xl border-2 transition-all duration-200 ${
-                selectedSession === session.id
-                  ? `${session.color} text-white border-transparent`
-                  : 'bg-gray-50 text-gray-700 border-gray-200 hover:border-gray-300'
-              }`}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <div className="text-center">
-                <div className="text-2xl mb-2">{session.icon}</div>
-                <div className="font-semibold text-sm">{session.name}</div>
-              </div>
-            </motion.button>
-          ))}
-        </div>
+      <div className="text-center mb-4">
+        <h2 className="text-xl font-bold text-gray-800 mb-1">Meditation Timer</h2>
+        <p className="text-sm text-gray-600">Find inner peace</p>
       </div>
 
       {/* Duration Selection */}
-      <div className="mb-8">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Duration</h3>
-        <div className="grid grid-cols-4 gap-3">
+      <div className="mb-4">
+        <div className="grid grid-cols-4 gap-1">
           {durations.map((duration) => (
             <motion.button
               key={duration.value}
@@ -165,7 +140,7 @@ const MeditationTimer = () => {
                 setSelectedDuration(duration.value);
                 setTimeLeft(duration.value);
               }}
-              className={`p-3 rounded-lg border-2 transition-all duration-200 ${
+              className={`p-2 rounded-lg border transition-all duration-200 text-xs ${
                 selectedDuration === duration.value
                   ? `${duration.color} text-white border-transparent`
                   : 'bg-gray-50 text-gray-700 border-gray-200 hover:border-gray-300'
@@ -173,17 +148,15 @@ const MeditationTimer = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <div className="text-center">
-                <div className="font-semibold">{duration.label}</div>
-              </div>
+              {duration.label}
             </motion.button>
           ))}
         </div>
       </div>
 
-      {/* Timer Display */}
-      <div className="text-center mb-8">
-        <div className="relative w-64 h-64 mx-auto mb-6">
+      {/* Compact Timer Display */}
+      <div className="text-center mb-4">
+        <div className="relative w-32 h-32 mx-auto mb-3">
           {/* Progress Circle */}
           <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
             <circle
@@ -191,7 +164,7 @@ const MeditationTimer = () => {
               cy="50"
               r="45"
               stroke="#e5e7eb"
-              strokeWidth="8"
+              strokeWidth="6"
               fill="none"
             />
             <motion.circle
@@ -199,7 +172,7 @@ const MeditationTimer = () => {
               cy="50"
               r="45"
               stroke="#10b981"
-              strokeWidth="8"
+              strokeWidth="6"
               fill="none"
               strokeLinecap="round"
               initial={{ strokeDasharray: '283 283', strokeDashoffset: '283' }}
@@ -214,87 +187,84 @@ const MeditationTimer = () => {
           {/* Time Display */}
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
-              <div className="text-4xl font-bold text-gray-800 mb-1">
+              <div className="text-2xl font-bold text-gray-800">
                 {formatTime(timeLeft)}
               </div>
-              <div className="text-sm text-gray-600">
-                {currentPhase === 'completed' ? 'Complete!' : phases[currentPhase]?.title || 'Ready'}
+              <div className="text-xs text-gray-600">
+                {currentPhase === 'completed' ? 'Done!' : 'Ready'}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Controls */}
-        <div className="flex justify-center space-x-4">
+        {/* Compact Controls */}
+        <div className="flex justify-center space-x-2">
           {!isActive ? (
             <motion.button
               onClick={startTimer}
-              className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-8 py-3 rounded-xl hover:from-emerald-600 hover:to-teal-700 transition-all duration-200 flex items-center space-x-2"
+              className="bg-emerald-500 text-white px-4 py-2 rounded-lg hover:bg-emerald-600 transition-all duration-200 flex items-center space-x-1 text-sm"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Icon name="play" size="sm" />
+              <FaPlay className="w-3 h-3" />
               <span>Start</span>
             </motion.button>
           ) : (
             <>
               <motion.button
                 onClick={pauseTimer}
-                className="bg-gradient-to-r from-yellow-500 to-orange-600 text-white px-6 py-3 rounded-xl hover:from-yellow-600 hover:to-orange-700 transition-all duration-200 flex items-center space-x-2"
+                className="bg-yellow-500 text-white px-3 py-2 rounded-lg hover:bg-yellow-600 transition-all duration-200 text-sm flex items-center justify-center"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Icon name="pause" size="sm" />
-                <span>Pause</span>
+                <FaPause className="w-3 h-3" />
               </motion.button>
               <motion.button
                 onClick={resetTimer}
-                className="bg-gradient-to-r from-gray-500 to-gray-600 text-white px-6 py-3 rounded-xl hover:from-gray-600 hover:to-gray-700 transition-all duration-200 flex items-center space-x-2"
+                className="bg-gray-500 text-white px-3 py-2 rounded-lg hover:bg-gray-600 transition-all duration-200 text-sm flex items-center justify-center"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Icon name="refresh" size="sm" />
-                <span>Reset</span>
+                <FaStop className="w-3 h-3" />
               </motion.button>
             </>
           )}
         </div>
       </div>
 
-      {/* Current Instruction */}
-      <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 text-center">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">
-          {phases[currentPhase]?.title || 'Ready to Begin'}
-        </h3>
-        <p className="text-gray-600 mb-4">
-          {phases[currentPhase]?.instruction || getCurrentInstruction()}
-        </p>
-        
-        {isActive && (
-          <div className="flex items-center justify-center space-x-2 text-emerald-600">
-            <Icon name="sparkles" size="sm" />
-            <span className="text-sm font-medium">Session in progress...</span>
-          </div>
-        )}
+      {/* Session Selection - Compact */}
+      <div className="mb-4">
+        <h3 className="text-sm font-semibold text-gray-800 mb-2">Practice</h3>
+        <div className="grid grid-cols-2 gap-2">
+          {sessions.slice(0, 4).map((session) => (
+            <motion.button
+              key={session.id}
+              onClick={() => setSelectedSession(session.id)}
+              className={`p-2 rounded-lg border transition-all duration-200 ${
+                selectedSession === session.id
+                  ? `${session.color} text-white border-transparent`
+                  : 'bg-gray-50 text-gray-700 border-gray-200 hover:border-gray-300'
+              }`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <div className="text-center">
+                <div className="text-lg mb-1">{session.icon}</div>
+                <div className="font-medium text-xs truncate">{session.name}</div>
+              </div>
+            </motion.button>
+          ))}
+        </div>
       </div>
 
-      {/* Tips */}
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="text-center p-4 bg-blue-50 rounded-xl">
-          <Icon name="leaf" size="lg" className="text-blue-600 mx-auto mb-2" />
-          <h4 className="font-semibold text-gray-800 mb-1">Comfortable Position</h4>
-          <p className="text-sm text-gray-600">Sit or lie in a comfortable position</p>
-        </div>
-        <div className="text-center p-4 bg-purple-50 rounded-xl">
-          <Icon name="eye" size="lg" className="text-purple-600 mx-auto mb-2" />
-          <h4 className="font-semibold text-gray-800 mb-1">Close Your Eyes</h4>
-          <p className="text-sm text-gray-600">Reduce external distractions</p>
-        </div>
-        <div className="text-center p-4 bg-emerald-50 rounded-xl">
-          <Icon name="brain" size="lg" className="text-emerald-600 mx-auto mb-2" />
-          <h4 className="font-semibold text-gray-800 mb-1">Gentle Focus</h4>
-          <p className="text-sm text-gray-600">Let thoughts come and go naturally</p>
-        </div>
+      {/* Compact Stats */}
+      <div className="bg-blue-50 rounded-xl p-3 mt-auto">
+        <h3 className="text-sm font-semibold text-gray-800 mb-2">
+          {phases[currentPhase]?.title || 'Ready to Begin'}
+        </h3>
+        <p className="text-xs text-gray-600">
+          {isActive ? 'Session in progress...' : getCurrentInstruction()}
+        </p>
       </div>
     </motion.div>
   );
