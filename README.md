@@ -100,7 +100,7 @@ npm run verify-models
 ```
 
 #### Manual Setup
-1. **Download from Google Drive**: [ML Models Folder](https://drive.google.com/drive/folders/YOUR_FOLDER_ID)
+1. **Download from Google Drive**: [ML Models Folder](https://drive.google.com/drive/folders/1AbYxAAFPcSYvXUMvx2WJv7NsH83Q6gop)
 2. **Extract to project root**: Models will be placed in correct directories
 3. **Verify**: Run `npm run verify-models`
 

@@ -25,7 +25,7 @@ node scripts/download-models.js
 ```
 
 ### **Option 2: Manual Download**
-1. **Download from Google Drive**: [ML Models Folder](https://drive.google.com/drive/folders/YOUR_FOLDER_ID)
+1. **Download from Google Drive**: [ML Models Folder](https://drive.google.com/drive/folders/1AbYxAAFPcSYvXUMvx2WJv7NsH83Q6gop)
 2. **Extract to project root**: The models will be placed in correct directories
 3. **Verify installation**: Run `npm run verify-models`
 

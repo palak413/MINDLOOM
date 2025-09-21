@@ -18,8 +18,8 @@ const { execSync } = require('child_process');
 
 // Configuration
 const CONFIG = {
-  // Google Drive folder ID (you'll need to replace this with your actual folder ID)
-  DRIVE_FOLDER_ID: 'YOUR_GOOGLE_DRIVE_FOLDER_ID',
+  // Google Drive folder ID
+  DRIVE_FOLDER_ID: '1AbYxAAFPcSYvXUMvx2WJv7NsH83Q6gop',
   
   // Direct download links (replace with your actual shareable links)
   DOWNLOAD_LINKS: {
