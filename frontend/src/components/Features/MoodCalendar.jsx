@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Icon } from '../Icons/IconSystem';
+import { FaPlus } from 'react-icons/fa';
+import { IoRefresh } from 'react-icons/io5';
 import { moodAPI } from '../../services/api';
 
 const MoodCalendar = () => {
@@ -102,68 +103,66 @@ const MoodCalendar = () => {
 
   return (
     <motion.div
-      className="bg-white rounded-2xl shadow-lg p-6"
+      className="bg-white rounded-2xl shadow-lg p-4 h-[500px] flex flex-col"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-1">Mood Calendar</h2>
-          <p className="text-gray-600">Track your emotional journey</p>
+          <h2 className="text-xl font-bold text-gray-800 mb-1">Mood Calendar</h2>
+          <p className="text-sm text-gray-600">Track your emotions</p>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1">
           <button
             onClick={() => navigateMonth(-1)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
           >
-            <Icon name="chevronLeft" size="sm" className="text-gray-600" />
+            <span className="text-gray-600 text-sm font-bold">&lt;</span>
           </button>
-          <span className="text-lg font-semibold text-gray-800 min-w-[120px] text-center">
-            {months[selectedMonth.getMonth()]} {selectedMonth.getFullYear()}
+          <span className="text-sm font-semibold text-gray-800 min-w-[100px] text-center">
+            {months[selectedMonth.getMonth()].slice(0, 3)} {selectedMonth.getFullYear()}
           </span>
           <button
             onClick={() => navigateMonth(1)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
           >
-            <Icon name="chevronRight" size="sm" className="text-gray-600" />
+            <span className="text-gray-600 text-sm font-bold">&gt;</span>
           </button>
         </div>
       </div>
 
-      {/* Mood Legend */}
-      <div className="mb-6">
-        <h3 className="text-sm font-semibold text-gray-700 mb-3">Mood Legend</h3>
-        <div className="grid grid-cols-4 gap-2">
-          {Object.entries(moodColors).map(([mood, color]) => (
-            <div key={mood} className="flex items-center space-x-2">
-              <div className={`w-4 h-4 rounded-full ${color}`}></div>
-              <span className="text-xs text-gray-600 capitalize">{mood}</span>
-              <span className="text-xs text-gray-400">({moodStats[mood] || 0})</span>
+      {/* Compact Mood Legend */}
+      <div className="mb-4">
+        <div className="grid grid-cols-4 gap-1">
+          {Object.entries(moodColors).slice(0, 4).map(([mood, color]) => (
+            <div key={mood} className="flex items-center space-x-1">
+              <div className={`w-3 h-3 rounded-full ${color}`}></div>
+              <span className="text-xs text-gray-600 capitalize truncate">{mood}</span>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Calendar Grid */}
-      <div className="mb-6">
-        <div className="grid grid-cols-7 gap-1 mb-2">
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-            <div key={day} className="text-center text-sm font-semibold text-gray-600 py-2">
+      {/* Compact Calendar Grid */}
+      <div className="mb-4">
+        <div className="grid grid-cols-7 gap-0.5 mb-1">
+          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => (
+            <div key={index} className="text-center text-xs font-semibold text-gray-600 py-1">
               {day}
             </div>
           ))}
         </div>
         
-        <div className="grid grid-cols-7 gap-1">
+        <div className="grid grid-cols-7 gap-0.5">
           {days.map((day, index) => {
             const mood = getMoodForDate(day);
             return (
               <motion.div
                 key={index}
                 className={`
-                  aspect-square flex items-center justify-center text-sm rounded-lg border-2 transition-all duration-200
+                  aspect-square flex items-center justify-center text-xs rounded-md border transition-all duration-200
                   ${day 
                     ? mood 
                       ? `${moodColors[mood.mood]} text-white border-transparent hover:scale-105 cursor-pointer` 
@@ -178,9 +177,9 @@ const MoodCalendar = () => {
                 {day && (
                   <>
                     {mood ? (
-                      <span className="text-lg">{moodIcons[mood.mood]}</span>
+                      <span className="text-sm">{moodIcons[mood.mood]}</span>
                     ) : (
-                      <span className="text-gray-400">{day.getDate()}</span>
+                      <span className="text-gray-400 text-xs">{day.getDate()}</span>
                     )}
                   </>
                 )}
@@ -190,51 +189,40 @@ const MoodCalendar = () => {
         </div>
       </div>
 
-      {/* Mood Statistics */}
-      <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4">
-        <h3 className="text-lg font-semibold text-gray-800 mb-3">This Month's Mood Trends</h3>
+      {/* Compact Mood Summary */}
+      <div className="bg-blue-50 rounded-xl p-3 mb-3">
+        <h3 className="text-sm font-semibold text-gray-800 mb-2">This Month</h3>
         {Object.keys(moodStats).length > 0 ? (
-          <div className="space-y-2">
+          <div className="flex flex-wrap gap-2">
             {Object.entries(moodStats)
               .sort(([,a], [,b]) => b - a)
+              .slice(0, 3)
               .map(([mood, count]) => (
-                <div key={mood} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-lg">{moodIcons[mood]}</span>
-                    <span className="text-sm font-medium text-gray-700 capitalize">{mood}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-20 bg-gray-200 rounded-full h-2">
-                      <div 
-                        className={`h-2 rounded-full ${moodColors[mood]} transition-all duration-500`}
-                        style={{ width: `${(count / moodData.length) * 100}%` }}
-                      />
-                    </div>
-                    <span className="text-sm text-gray-600 font-medium">{count}</span>
-                  </div>
+                <div key={mood} className="flex items-center space-x-1 bg-white rounded-lg px-2 py-1">
+                  <span className="text-sm">{moodIcons[mood]}</span>
+                  <span className="text-xs text-gray-600">{count}</span>
                 </div>
               ))}
           </div>
         ) : (
-          <p className="text-gray-500 text-sm">No mood data for this month. Start logging your moods!</p>
+          <p className="text-gray-500 text-xs">No mood data yet</p>
         )}
       </div>
 
-      {/* Quick Actions */}
-      <div className="mt-6 flex space-x-3">
-        <button
-          onClick={fetchMoodData}
-          className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white py-2 px-4 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 flex items-center justify-center space-x-2"
-        >
-          <Icon name="refresh" size="sm" />
-          <span>Refresh Data</span>
-        </button>
+      {/* Compact Quick Actions */}
+      <div className="flex space-x-2 mt-auto">
         <button
           onClick={() => window.location.href = '/mood-tracking'}
-          className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-2 px-4 rounded-lg hover:from-emerald-600 hover:to-teal-700 transition-all duration-200 flex items-center justify-center space-x-2"
+          className="flex-1 bg-emerald-500 text-white py-2 px-3 rounded-lg hover:bg-emerald-600 transition-all duration-200 flex items-center justify-center space-x-1 text-sm"
         >
-          <Icon name="add" size="sm" />
+          <FaPlus className="w-3 h-3" />
           <span>Log Mood</span>
+        </button>
+        <button
+          onClick={fetchMoodData}
+          className="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center"
+        >
+          <IoRefresh className="w-4 h-4" />
         </button>
       </div>
     </motion.div>
